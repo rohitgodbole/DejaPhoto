@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -28,11 +29,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void nextPic () {
+
+    }
+
+    public void prevPic () {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* change wallpaper button */
         b = (Button) findViewById(R.id.button);
         i = (ImageView) findViewById(R.id.img);
 
@@ -42,6 +52,24 @@ public class MainActivity extends AppCompatActivity {
                 changeWallpaper(view);
             }
         });
+
+        ImageButton buttonNext = (ImageButton) findViewById(R.id.next_button);
+        ImageButton buttonPrev = (ImageButton)  findViewById(R.id.prev_button);
+
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                nextPic();
+            }
+        });
+
+        buttonPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public  void onClick (View view) {
+                prevPic();
+            }
+        });
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
