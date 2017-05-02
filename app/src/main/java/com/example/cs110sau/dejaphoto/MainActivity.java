@@ -29,12 +29,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void nextPic () {
-
+    public void nextPic (View view) {
+        //TODO @Oscar
     }
 
-    public void prevPic () {
-
+    public void prevPic (View view) {
+        //TODO @Oscar
     }
 
     @Override
@@ -53,20 +53,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* previous/next button, to be completed*/
+        //TODO @Oscar
         ImageButton buttonNext = (ImageButton) findViewById(R.id.next_button);
         ImageButton buttonPrev = (ImageButton)  findViewById(R.id.prev_button);
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
-                nextPic();
+                nextPic(view);
             }
         });
 
         buttonPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public  void onClick (View view) {
-                prevPic();
+                prevPic(view);
             }
         });
 
