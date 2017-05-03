@@ -17,8 +17,8 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button b;
-    ImageView i;
+    Button changeWallpaper;
+    ImageView default_img;
 
     public void changeWallpaper (View view) {
         WallpaperManager w = WallpaperManager.getInstance (getApplicationContext());
@@ -43,10 +43,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         /* change wallpaper button */
-        b = (Button) findViewById(R.id.button);
-        i = (ImageView) findViewById(R.id.img);
+        changeWallpaper = (Button) findViewById(R.id.changeWallpaper);
+        default_img = (ImageView) findViewById(R.id.default_img);
 
-        b.setOnClickListener(new View.OnClickListener() {
+        changeWallpaper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
                 changeWallpaper(view);

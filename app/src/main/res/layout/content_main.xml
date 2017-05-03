@@ -9,64 +9,41 @@
     tools:showIn="@layout/activity_main">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
         android:id="@+id/linearLayout"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="8dp"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp">
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Change Wallpaper"
-            android:id="@+id/button"/>
+            android:id="@+id/changeWallpaper"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/prev_button"
+            android:src="@drawable/prev" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/next_button"
+            android:src="@drawable/next" />
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginBottom="50dp"
-            android:id="@+id/img"
+            android:id="@+id/default_img"
             android:src="@drawable/wallpaper"/>
 
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/prev_button"
-        android:layout_width="38dp"
-        android:layout_height="52dp"
-        android:src="@drawable/Previous_button"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="47dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="6dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="47dp" />
 
-    <ImageButton
-        android:id="@+id/next_button"
-        android:layout_width="38dp"
-        android:layout_height="52dp"
-        android:src="@drawable/Next_button"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-        android:layout_marginEnd="59dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="59dp" />
 
 </android.support.constraint.ConstraintLayout>
