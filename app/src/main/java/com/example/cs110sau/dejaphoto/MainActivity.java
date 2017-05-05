@@ -1,63 +1,97 @@
 package com.example.cs110sau.dejaphoto;
 
+import android.app.Activity;
 import android.app.WallpaperManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.UserHandle;
 import android.provider.MediaStore;
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringDef;
+import android.support.annotation.StyleRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
     Button changeWallpaper;
-    ImageView default_img;
+    Uri picUri;
 
     public void changeWallpaper (View view) {
 
-        System.out.println("TEST");
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(intent, 12345);
 
-        Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(i, 1);
-
-        WallpaperManager w = WallpaperManager.getInstance (getApplicationContext());
-        try {
-            w.setResource( + R.drawable.wallpaper);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
-        /*
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+        Toast.makeText(getApplicationContext(), "Activity Finished", Toast.LENGTH_SHORT).show();
 
-            ImageView imageView = (ImageView) findViewById(R.id.default_img);
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-        */
+        if (requestCode == 12345 && resultCode == RESULT_OK) {
+            if (data != null) {
+                picUri = data.getData();
+                WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
+               try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+                    w.setBitmap(bitmap);
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -76,11 +110,10 @@ public class MainActivity extends AppCompatActivity {
 
         /* change wallpaper button */
         changeWallpaper = (Button) findViewById(R.id.changeWallpaper);
-        default_img = (ImageView) findViewById(R.id.default_img);
 
         changeWallpaper.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick (View view) {
+            public void onClick(View view) {
                 changeWallpaper(view);
             }
         });
@@ -88,55 +121,21 @@ public class MainActivity extends AppCompatActivity {
         /* previous/next button, to be completed*/
         //TODO @Oscar
         ImageButton buttonNext = (ImageButton) findViewById(R.id.next_button);
-        ImageButton buttonPrev = (ImageButton)  findViewById(R.id.prev_button);
+        ImageButton buttonPrev = (ImageButton) findViewById(R.id.prev_button);
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick (View view) {
+            public void onClick(View view) {
                 nextPic(view);
             }
         });
 
         buttonPrev.setOnClickListener(new View.OnClickListener() {
             @Override
-            public  void onClick (View view) {
+            public void onClick(View view) {
                 prevPic(view);
             }
         });
 
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
