@@ -1,7 +1,10 @@
 package com.example.cs110sau.dejaphoto;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -48,6 +51,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.io.File;
@@ -118,24 +122,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /* previous/next button, to be completed*/
-        //TODO @Oscar
-        ImageButton buttonNext = (ImageButton) findViewById(R.id.next_button);
-        ImageButton buttonPrev = (ImageButton) findViewById(R.id.prev_button);
 
-        buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                nextPic(view);
-            }
-        });
-
-        buttonPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                prevPic(view);
-            }
-        });
 
     }
 }
+
