@@ -3,15 +3,19 @@
     package="com.example.cs110sau.dejaphoto">
 
     <uses-sdk
-        android:maxSdkVersion="17"
+        android:maxSdkVersion="25"
         android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="21" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RUN_IN_BACKGROUND" />
+
+    <grant-uri-permission android:path="content://media/external/images/media" />
 
     <application
         android:allowBackup="true"
@@ -41,7 +45,12 @@
                 android:resource="@xml/provider_info" />
         </receiver>
 
-        <activity android:name=".ExampleActivity"></activity>
+        <activity android:name=".ExampleActivity" />
+
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
