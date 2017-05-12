@@ -17,10 +17,13 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
+            Intent nextPhotoIntent = new Intent(context, NextPhotoActivity.class);
+            PendingIntent nextPhotoPendingIntent = PendingIntent.getActivity(context, 0, nextPhotoIntent, 0);
+
             // Get the layout for the App Widget and attach an on-click listener
             // to the button
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-            views.setOnClickPendingIntent(R.id.Right, pendingIntent);
+            views.setOnClickPendingIntent(R.id.Right, nextPhotoPendingIntent);
 
             views.setOnClickPendingIntent(R.id.Left, pendingIntent);
 

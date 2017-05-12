@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -68,16 +69,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         cursor.close();
-        return pathNames;
 
-/*
-        // test strings since above code isn't working for now
-        List<String> asdf = new ArrayList<String>();
-        asdf.add("test - 3");
-        asdf.add("test - 2");
-        asdf.add("test - 1");
-        return asdf;
-        */
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("index",5); // TODO remove later?
+        for (int i = 0; i < pathNames.size(); i++) {
+            String key = Integer.toString(i);
+            editor.putString(key, pathNames.get(i));
+        }
+
+        return pathNames;
 
     }
 
@@ -118,14 +119,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void nextPic(View view) {
-        //TODO @Oscar
-    }
-
-    public void prevPic(View view) {
-        //TODO @Oscar
-    }
-
     /* TODO Method Header: onCreate */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,12 +132,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "App Started", Toast.LENGTH_SHORT).show();
 
         List<String> pathNames = getCameraImages(getApplicationContext());
-        List<Uri> uriNames = new ArrayList<>();
-
-        for (int i = 0; i < pathNames.size(); i++) {
-            Toast.makeText(getApplicationContext(), pathNames.get(i), Toast.LENGTH_SHORT).show();
-            uriNames.add(Uri.parse(pathNames.get(i)));
-        }
 
         /* onClick listeners for buttons */
         changeWallpaper = (Button) findViewById(R.id.chooseWallpaper);
