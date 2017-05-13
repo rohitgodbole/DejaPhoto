@@ -11,6 +11,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
     Button changeWallpaper;
     Button refresh;
     Uri picUri;
-    Testuri test1;
+    //Testuri test1;
+    String testuri;          //string of valid pathname
+    Canvas canvas = new Canvas();   //used to create a canvas to try to add location
 
     /* TODO modify below method
     * getCameraImages - should get the Uri of all photos and store into an array of strings
@@ -61,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
 
         List<String> pathNames = new ArrayList<String>(cursor.getCount());
+
+
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             do {
@@ -94,15 +102,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* TODO Method Header: uriToWallpaper */
-  /*  public void uriToWallpaper(Uri picUri) {
+    public void uriToWallpaper(Uri picUri) {
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+            // display location on the homescreen
+            /*Bitmap mutable = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            canvas.setBitmap(mutable);
+            Paint paint = new Paint();
+            paint.setTextSize(1000);
+
+            canvas.drawText(readGeoTagImage(testuri),0, 0, paint);
+            canvas.drawBitmap(mutable,0,0,null);
+            */
+            // change to mutable below
             w.setBitmap(bitmap);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
 
     /* TODO Method Header: onActivityResult */
@@ -113,8 +131,9 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CHOOSE_PIC_CODE && resultCode == RESULT_OK) {
             if (data != null) {
                 picUri = data.getData();
-                test1.uriToWallpaper(picUri);
-                Toast.makeText(getApplicationContext(), "Activity Finished", Toast.LENGTH_SHORT).show();
+                uriToWallpaper(picUri);
+                // toast for testing latitude
+                Toast.makeText(getApplicationContext(), readGeoTagImage(testuri), Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
             }
@@ -134,7 +153,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "App Started", Toast.LENGTH_SHORT).show();
 
         List<String> pathNames = getCameraImages(getApplicationContext());
-
+        Toast.makeText(getApplicationContext(), pathNames.get(3), Toast.LENGTH_SHORT).show();
+        testuri = pathNames.get(3);
         /* onClick listeners for buttons */
         changeWallpaper = (Button) findViewById(R.id.chooseWallpaper);
         refresh = (Button) findViewById(R.id.refresh);
@@ -202,5 +222,34 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
     }
 
+    //takes pathname and get's lat and long and returns ... for not just lat i think
+    public String readGeoTagImage(String imagePath)
+    {
+        Location loc = new Location("");
+        String lat;
+        try {
+
+            Toast.makeText(getApplicationContext(), "Trying", Toast.LENGTH_SHORT).show();
+            ExifInterface exif = new ExifInterface(imagePath);
+            float [] latlong = new float[2] ;
+            Toast.makeText(getApplicationContext(), "Trying", Toast.LENGTH_SHORT).show();
+            if(exif.getLatLong(latlong)){
+                loc.setLatitude(latlong[0]);
+                loc.setLongitude(latlong[1]);
+            }
+
+            lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+            return loc.toString();
+            //SimpleDateFormat fmt_Exif = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+            //loc.setTime(fmt_Exif.parse(date).getTime());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //return lat;
+        return "fail";
+    }
 }
+
+
 
