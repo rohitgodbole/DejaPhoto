@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Button changeWallpaper;
     Button refresh;
     Uri picUri;
+    Testuri test1;
 
     /* TODO modify below method
     * getCameraImages - should get the Uri of all photos and store into an array of strings
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* TODO Method Header: uriToWallpaper */
-    public void uriToWallpaper(Uri picUri) {
+  /*  public void uriToWallpaper(Uri picUri) {
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
@@ -101,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
+
 
     /* TODO Method Header: onActivityResult */
     @Override
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CHOOSE_PIC_CODE && resultCode == RESULT_OK) {
             if (data != null) {
                 picUri = data.getData();
-                uriToWallpaper(picUri);
+                test1.uriToWallpaper(picUri);
                 Toast.makeText(getApplicationContext(), "Activity Finished", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
