@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+// TODO implement 10 most recent pics
+
 public class PrevPhotoActivity extends AppCompatActivity {
 
     @Override

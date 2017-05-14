@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class NextPhotoActivity extends AppCompatActivity {
 
@@ -28,7 +29,13 @@ public class NextPhotoActivity extends AppCompatActivity {
 
         int index = sharedPreferences.getInt("index",-1);
         int size = sharedPreferences.getInt("size",1);
+
+        String currentPic = sharedPreferences.getString(Integer.toString(index), null);
         String nextPicName = "";
+
+        if (currentPic != null) {
+            updateRecentPhotos (currentPic);
+        }
 
         do {
             index++;
@@ -82,6 +89,29 @@ public class NextPhotoActivity extends AppCompatActivity {
         }
         //return lat;
         return "fail";
+    }
+
+    public void updateRecentPhotos (String currentPic) {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+
+        String [] recent = new String[10];
+
+        for (int i = 0; i < 10; i++) {
+            recent[i] = sharedPreferences.getString("recent" + i, null);
+        }
+
+        if (recent[0] == null) {
+            recent[0] = currentPic;
+        }
+        else {
+            // TODO shift all recent pictures down one & add current pic
+        }
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        for (int i = 0; i < 10; i++) {
+            editor.putString("recent" + i, recent[i]);
+        }
+        editor.commit();
     }
 
 }
