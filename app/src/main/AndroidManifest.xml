@@ -55,6 +55,12 @@
         <activity
             android:name=".NextPhotoActivity"
             android:label="@string/title_activity_next_photo"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PrevPhotoActivity"
+            android:label="@string/title_activity_prev_photo"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

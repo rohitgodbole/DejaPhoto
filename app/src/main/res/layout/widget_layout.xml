@@ -3,59 +3,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/widget_margin"
-    android:background="#55000000">
+    android:gravity="center_horizontal">
 
 
     <ImageButton
         android:id="@+id/Left"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="fitCenter"
         android:layout_alignBottom="@+id/Release"
         android:layout_marginRight="5dp"
         android:layout_toStartOf="@+id/Release"
         android:layout_weight="1"
-        android:background="@drawable/round_button"
-        android:backgroundTint="?android:attr/textColorPrimaryInverse"
         android:src="@drawable/prev" />
 
     <ImageButton
-        android:id="@+id/Kharma"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:id="@+id/Karma"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="fitCenter"
         android:layout_alignTop="@+id/Right"
         android:layout_marginRight="5dp"
         android:layout_toStartOf="@+id/Right"
         android:layout_weight="1"
-        android:background="@drawable/round_button"
-        android:backgroundTint="?android:attr/textColorPrimaryInverse"
-        android:src="@drawable/kharma" />
+        android:src="@drawable/karma" />
 
     <ImageButton
         android:id="@+id/Release"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:layout_alignTop="@+id/Kharma"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="fitCenter"
+        android:layout_alignTop="@+id/Karma"
         android:layout_marginRight="5dp"
-        android:layout_toStartOf="@+id/Kharma"
+        android:layout_toStartOf="@+id/Karma"
         android:layout_weight="1"
-        android:background="@drawable/round_button"
-        android:backgroundTint="?android:attr/textColorPrimaryInverse"
         android:src="@drawable/release" />
 
     <ImageButton
         android:id="@+id/Right"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="fitCenter"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="5dp"
         android:layout_weight="1"
-        android:background="@drawable/round_button"
-        android:backgroundTint="?android:attr/textColorPrimaryInverse"
         android:src="@drawable/next" />
-
-
 
 </LinearLayout>

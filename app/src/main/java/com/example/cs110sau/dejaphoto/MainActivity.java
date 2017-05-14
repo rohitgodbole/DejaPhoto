@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    // TODO edge case when there are no pics in the phone?
 
     private static final int CHOOSE_PIC_CODE = 12345;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
@@ -40,13 +41,47 @@ public class MainActivity extends AppCompatActivity {
     Button changeWallpaper;
     Button refresh;
     Uri picUri;
-    //Testuri test1;
+    Testuri test1;
     String testuri;          //string of valid pathname
     Canvas canvas = new Canvas();   //used to create a canvas to try to add location
 
-    /* TODO modify below method
-    * getCameraImages - should get the Uri of all photos and store into an array of strings
-    * but the query method makes the app crash */
+
+
+    /* Runs when activity is started */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        while (!checkPermissionREAD_EXTERNAL_STORAGE(this)) {
+            checkPermissionREAD_EXTERNAL_STORAGE(this);
+        }
+
+        List<String> pathNames = getCameraImages(getApplicationContext());
+
+        /* onClick listeners for buttons */
+        changeWallpaper = (Button) findViewById(R.id.chooseWallpaper);
+        refresh = (Button) findViewById(R.id.refresh);
+
+        changeWallpaper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseWallpaper(view);
+            }
+        });
+
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getCameraImages(getApplicationContext());
+            }
+        });
+    }
+
+
+
+    /* TODO modify below method?
+    * getCameraImages - should get the Uri of all photos and store into an array of strings */
     @SuppressWarnings({"SecurityException", "MissingPermission"})
     public List<String> getCameraImages(Context context) {
 
@@ -59,15 +94,11 @@ public class MainActivity extends AppCompatActivity {
         String[] selectionArgs = {CAMERA_IMAGE_BUCKET_ID};
         ContentResolver contentResolver = context.getContentResolver();
 
-        // The query method is what makes this crash
-
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 258);
 
-        //Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
         Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
 
         List<String> pathNames = new ArrayList<String>(cursor.getCount());
-
 
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -81,15 +112,23 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("index",5); // TODO remove later?
+
+        editor.putInt("size", pathNames.size());
+        Toast.makeText(getApplicationContext(), "size: "+pathNames.size(), Toast.LENGTH_SHORT).show();
         for (int i = 0; i < pathNames.size(); i++) {
             String key = Integer.toString(i);
             editor.putString(key, pathNames.get(i));
         }
+        int index = sharedPreferences.getInt("index", Integer.MAX_VALUE);
+        if (index >= pathNames.size()) {
+            editor.putInt("index", 0);
+        }
+        editor.commit();
 
         return pathNames;
-
     }
+
+
 
     /* TODO Method Header: chooseWallpaper */
     public void chooseWallpaper(View view) {
@@ -101,7 +140,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /* TODO Method Header: uriToWallpaper */
+
+
+    /* uriToWallpaper: takes in a Uri as a parameter, changes picture to wallpaper */
     public void uriToWallpaper(Uri picUri) {
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         try {
@@ -123,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     /* TODO Method Header: onActivityResult */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -140,40 +182,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /* TODO Method Header: onCreate */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        while (!checkPermissionREAD_EXTERNAL_STORAGE(this)) {
-            checkPermissionREAD_EXTERNAL_STORAGE(this);
-        }
 
-        Toast.makeText(getApplicationContext(), "App Started", Toast.LENGTH_SHORT).show();
-
-        List<String> pathNames = getCameraImages(getApplicationContext());
-        Toast.makeText(getApplicationContext(), pathNames.get(3), Toast.LENGTH_SHORT).show();
-        testuri = pathNames.get(3);
-        /* onClick listeners for buttons */
-        changeWallpaper = (Button) findViewById(R.id.chooseWallpaper);
-        refresh = (Button) findViewById(R.id.refresh);
-
-        changeWallpaper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseWallpaper(view);
-            }
-        });
-
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getCameraImages(getApplicationContext());
-            }
-        });
-    }
-
+    // from Android developer site; ask for permission to read external storage at runtime
     public boolean checkPermissionREAD_EXTERNAL_STORAGE(
             final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
@@ -204,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+    // from Android developer site; helper method for checkPermission
     public void showDialog(final String msg, final Context context,
                            final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
@@ -221,6 +234,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alert = alertBuilder.create();
         alert.show();
     }
+
+
 
     //takes pathname and get's lat and long and returns ... for not just lat i think
     public String readGeoTagImage(String imagePath)
@@ -250,6 +265,3 @@ public class MainActivity extends AppCompatActivity {
         return "fail";
     }
 }
-
-
-
