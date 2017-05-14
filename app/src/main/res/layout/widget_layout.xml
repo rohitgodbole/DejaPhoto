@@ -7,7 +7,7 @@
 
 
     <ImageButton
-        android:id="@+id/Left"
+        android:id="@+id/left"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:scaleType="fitCenter"
@@ -18,7 +18,7 @@
         android:src="@drawable/prev" />
 
     <ImageButton
-        android:id="@+id/Karma"
+        android:id="@+id/karma"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:scaleType="fitCenter"
@@ -29,7 +29,7 @@
         android:src="@drawable/karma" />
 
     <ImageButton
-        android:id="@+id/Release"
+        android:id="@+id/release"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:scaleType="fitCenter"
@@ -40,7 +40,7 @@
         android:src="@drawable/release" />
 
     <ImageButton
-        android:id="@+id/Right"
+        android:id="@+id/right"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:scaleType="fitCenter"

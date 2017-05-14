@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_next_photo">NextPhotoActivity</string>
     <string name="title_activity_prev_photo">PrevPhotoActivity</string>
+    <string name="title_activity_karma">KarmaActivity</string>
+    <string name="title_activity_release">ReleaseActivity</string>
 </resources>

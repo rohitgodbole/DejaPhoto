@@ -114,7 +114,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putInt("size", pathNames.size());
+
+        // TODO replace with "DejaPhoto started, use widget to toggle wallpapers" message
         Toast.makeText(getApplicationContext(), "size: "+pathNames.size(), Toast.LENGTH_SHORT).show();
+
         for (int i = 0; i < pathNames.size(); i++) {
             String key = Integer.toString(i);
             editor.putString(key, pathNames.get(i));

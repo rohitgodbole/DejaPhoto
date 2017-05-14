@@ -10,16 +10,25 @@ import android.widget.RemoteViews;
 
 public class ExampleAppWidgetProvider extends AppWidgetProvider {
 
+    // TODO method header, inline comments
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
-        Intent intent1 = new Intent(context, NextPhotoActivity.class);
-        Intent intent2 = new Intent(context, PrevPhotoActivity.class);
-        PendingIntent pendingIntent1 = PendingIntent.getActivity(context, 0, intent1, 0);
-        PendingIntent pendingIntent2 = PendingIntent.getActivity(context, 0, intent2, 0);
+        Intent nextIntent    = new Intent (context, NextPhotoActivity.class);
+        Intent prevIntent    = new Intent (context, PrevPhotoActivity.class);
+        Intent karmaIntent   = new Intent (context, KarmaActivity.class);
+        Intent releaseIntent = new Intent (context, ReleaseActivity.class);
 
-        remoteViews.setOnClickPendingIntent(R.id.Right, pendingIntent1);
-        remoteViews.setOnClickPendingIntent(R.id.Left, pendingIntent2);
+        PendingIntent nextPendingIntent    = PendingIntent.getActivity (context, 0, nextIntent, 0);
+        PendingIntent prevPendingIntent    = PendingIntent.getActivity (context, 0, prevIntent, 0);
+        PendingIntent karmaPendingIntent   = PendingIntent.getActivity (context, 0, karmaIntent, 0);
+        PendingIntent releasePendingIntent = PendingIntent.getActivity (context, 0, releaseIntent, 0);
+
+        remoteViews.setOnClickPendingIntent (R.id.right,   nextPendingIntent);
+        remoteViews.setOnClickPendingIntent (R.id.left,    prevPendingIntent);
+        remoteViews.setOnClickPendingIntent (R.id.karma,   karmaPendingIntent);
+        remoteViews.setOnClickPendingIntent (R.id.release, releasePendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
     }

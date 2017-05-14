@@ -1,20 +1,13 @@
 package com.example.cs110sau.dejaphoto;
 
 import android.app.WallpaperManager;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -24,8 +17,9 @@ public class NextPhotoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        finish();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_next_photo);
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -43,7 +37,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         String nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
         if (nextPicName.equals("ERROR")) {
             Toast.makeText(getApplicationContext(), "Error retrieving image", Toast.LENGTH_SHORT);
-            finish();
+            return;
         }
 
         Toast.makeText(getApplicationContext(), readGeoTagImage(nextPicName), Toast.LENGTH_SHORT).show();
@@ -56,8 +50,6 @@ public class NextPhotoActivity extends AppCompatActivity {
         catch (IOException e) {
             e.printStackTrace();
         }
-
-        finish();
 
     }
 

@@ -61,6 +61,16 @@
             android:name=".PrevPhotoActivity"
             android:label="@string/title_activity_prev_photo"
             android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".KarmaActivity"
+            android:label="@string/title_activity_karma"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ReleaseActivity"
+            android:label="@string/title_activity_release"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
