@@ -45,13 +45,6 @@
                 android:resource="@xml/provider_info" />
         </receiver>
 
-        <activity android:name=".ExampleActivity" />
-
-        <service
-            android:name=".BackgroundService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".NextPhotoActivity"
             android:label="@string/title_activity_next_photo"
