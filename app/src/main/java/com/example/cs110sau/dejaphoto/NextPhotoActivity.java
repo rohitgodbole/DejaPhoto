@@ -14,7 +14,9 @@ import java.io.IOException;
 
 public class NextPhotoActivity extends AppCompatActivity {
 
+    // TODO known bug: if all photos are released, app will cycle in an infinite loop
 
+    // onCreate - runs when activity starts, cycles to next photo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -26,15 +28,19 @@ public class NextPhotoActivity extends AppCompatActivity {
 
         int index = sharedPreferences.getInt("index",-1);
         int size = sharedPreferences.getInt("size",1);
+        String nextPicName = "";
 
-        index++;
-        if (index >= size) {
-            index = 0;
-        }
+        do {
+            index++;
+            if (index >= size) {
+                index = 0;
+            }
+            nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
+        } while (nextPicName.equals("RELEASED"));
+
         editor.putInt("index", index);
         editor.commit();
 
-        String nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
         if (nextPicName.equals("ERROR")) {
             Toast.makeText(getApplicationContext(), "Error retrieving image", Toast.LENGTH_SHORT);
             return;

@@ -1,5 +1,6 @@
 package com.example.cs110sau.dejaphoto;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,9 @@ public class ReleaseActivity extends AppCompatActivity {
         int index = sharedPreferences.getInt("index", 0);
         editor.putString(Integer.toString(index), "RELEASED");
         editor.commit();
+
+        Intent intent = new Intent(this, NextPhotoActivity.class);
+        startActivity(intent);
 
     }
 
