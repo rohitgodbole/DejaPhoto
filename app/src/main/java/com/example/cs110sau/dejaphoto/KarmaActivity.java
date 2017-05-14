@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import static java.lang.Boolean.TRUE;
+
 public class KarmaActivity extends AppCompatActivity {
 
     @Override
@@ -17,7 +19,7 @@ public class KarmaActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         int index = sharedPreferences.getInt("index", 0);
-        editor.putString(Integer.toString(index) + "karma", "TRUE");
+        editor.putBoolean(Integer.toString(index) + "karma", TRUE);
         editor.commit();
     }
 
