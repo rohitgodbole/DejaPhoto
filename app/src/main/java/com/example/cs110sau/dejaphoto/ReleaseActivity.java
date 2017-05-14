@@ -17,8 +17,15 @@ public class ReleaseActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        // indicate the picture has been released
         int index = sharedPreferences.getInt("index", 0);
         editor.putString(Integer.toString(index), "RELEASED");
+
+        // update total score (impacts probability function)
+        int totalScore = sharedPreferences.getInt("totalScore", 0);
+        totalScore -= sharedPreferences.getInt(Integer.toString(index) + "score", 0);
+        editor.putInt("totalScore",totalScore);
+
         editor.commit();
 
         Intent intent = new Intent(this, NextPhotoActivity.class);
