@@ -91,6 +91,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         return "fail";
     }
 
+    // updateRecentPhotos: Updates 10 most recent photos while going forwards
     public void updateRecentPhotos (String currentPic) {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
 
@@ -100,13 +101,15 @@ public class NextPhotoActivity extends AppCompatActivity {
             recent[i] = sharedPreferences.getString("recent" + i, null);
         }
 
-        if (recent[0] == null) {
+        // shift all recent photos down one
+        if (recent[0] != null) {
+            for (int i = 8; i >= 0; i--) {  // TODO magic numbers/strings? (here and in the other files)
+                recent[i + 1] = recent[i];
+            }
+        }
             recent[0] = currentPic;
-        }
-        else {
-            // TODO shift all recent pictures down one & add current pic
-        }
 
+        // write 10 most recent to sharedPref file
         SharedPreferences.Editor editor = sharedPreferences.edit();
         for (int i = 0; i < 10; i++) {
             editor.putString("recent" + i, recent[i]);
