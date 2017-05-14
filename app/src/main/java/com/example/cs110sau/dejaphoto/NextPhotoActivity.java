@@ -24,7 +24,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        int index = sharedPreferences.getInt("index",-1); // TODO default value?
+        int index = sharedPreferences.getInt("index",-1);
         int size = sharedPreferences.getInt("size",1);
 
         index++;
