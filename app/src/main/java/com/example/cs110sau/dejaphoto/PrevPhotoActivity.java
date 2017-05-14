@@ -23,14 +23,19 @@ public class PrevPhotoActivity extends AppCompatActivity {
         int index = sharedPreferences.getInt("index", -1);
         int size = sharedPreferences.getInt("size", 1);
 
-        index--;
-        if (index < 0) {
-            index = size - 1;
-        }
+        String nextPicName = "";
+
+        do {
+            index++;
+            if (index >= size) {
+                index = 0;
+            }
+            nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
+        } while (nextPicName.equals("RELEASED"));
+
         editor.putInt("index", index);
         editor.commit();
 
-        String nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
         if (nextPicName.equals("ERROR")) {
             Toast.makeText(getApplicationContext(), "Error retrieving image", Toast.LENGTH_SHORT);
             return;

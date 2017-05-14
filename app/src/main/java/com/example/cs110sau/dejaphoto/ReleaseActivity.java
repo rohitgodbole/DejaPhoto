@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-// TODO modify next/prev methods to skip over released
 public class ReleaseActivity extends AppCompatActivity {
 
     @Override

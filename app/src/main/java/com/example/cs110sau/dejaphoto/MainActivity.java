@@ -115,17 +115,24 @@ public class MainActivity extends AppCompatActivity {
 
         editor.putInt("size", pathNames.size());
 
-        // TODO replace with "DejaPhoto started, use widget to toggle wallpapers" message
-        Toast.makeText(getApplicationContext(), "size: "+pathNames.size(), Toast.LENGTH_SHORT).show();
+        // TODO replace with "app started" message?
+        Toast.makeText(getApplicationContext(), "Size: "+pathNames.size(), Toast.LENGTH_SHORT).show();
 
+        int totalScore = 0; // keeps track of cumulative probability scores of photos
         for (int i = 0; i < pathNames.size(); i++) {
             String key = Integer.toString(i);
             editor.putString(key, pathNames.get(i));
+            editor.putInt(key + "score", 10);  // probability score 1-100, default is 10
+            totalScore += 10;
         }
+
+        // don't mess with index, unless it's outside our new array of path names
         int index = sharedPreferences.getInt("index", Integer.MAX_VALUE);
         if (index >= pathNames.size()) {
             editor.putInt("index", 0);
         }
+
+        editor.putInt("totalScore", totalScore); // write total score, which determines probability
         editor.commit();
 
         return pathNames;
@@ -133,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    /* TODO Method Header: chooseWallpaper */
+    /* chooseWallpaper: Allows user to choose a picture in the gallery to change to their wallpaper */
     public void chooseWallpaper(View view) {
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
