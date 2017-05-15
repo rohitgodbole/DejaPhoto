@@ -30,16 +30,18 @@ public class PrevPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         String nextPicName = updateRecentPhotos();
-        while (nextPicName.equals("RELEASED")) {
-            nextPicName = updateRecentPhotos();
-            if (nextPicName == null) break;
-        }
-
-        Toast.makeText(this, nextPicName, Toast.LENGTH_SHORT).show();
 
         if (nextPicName == null) {
             Toast.makeText(this, "Previous photo not found", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        while (nextPicName.equals("RELEASED")) {
+            nextPicName = updateRecentPhotos();
+            if (nextPicName == null) {
+                Toast.makeText(this, "Previous photo not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);

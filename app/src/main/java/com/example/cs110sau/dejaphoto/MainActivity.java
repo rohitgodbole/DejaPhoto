@@ -46,7 +46,9 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
     // TODO edge case when there are no pics in the phone
 
+    // unique ints to act as request codes
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1470;
     static final long MILLISECONDS_IN_HOUR = 3600000;
     static final long HOURS_IN_MONTH = 730;
 
@@ -64,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         while (!checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             checkPermissionREAD_EXTERNAL_STORAGE(this);
+        }
+
+        while (!checkPermissionACCESS_FINE_LOCATION(this)) {
+            checkPermissionACCESS_FINE_LOCATION(this);
         }
 
         // TODO might need to give more permissions at runtime
@@ -136,8 +142,10 @@ public class MainActivity extends AppCompatActivity {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
                     Date picDate = simpleDateFormat.parse(picTime);
                     Date currentDate = new Date();
-                    long timediff = picDate.getTime() - currentDate.getTime();
+                    long timediff = currentDate.getTime() - picDate.getTime();
                     monthsSincePhoto = (int) ((timediff / MILLISECONDS_IN_HOUR) / HOURS_IN_MONTH);
+                    Toast.makeText(context, picTime, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Months Since: "+monthsSincePhoto, Toast.LENGTH_SHORT).show();
                 }
             }
             catch (IOException e) {
@@ -159,6 +167,12 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt("index", 0);
         }
 
+        // reset most recently displayed photo
+        editor.putString("recentX", null);
+        for (int i = 0; i < 10; i++) {
+            editor.putString("recent" + i, null);
+        }
+
         editor.putInt("totalScore", totalScore); // write total score, which determines probability
         editor.commit();
 
@@ -173,9 +187,14 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (dejavumode.isChecked()) {
             editor.putBoolean("dejavumode", true);
+            editor.commit();
+            Toast.makeText(this, "Deja Vu Mode On", Toast.LENGTH_SHORT).show();
         }
         else {
             editor.putBoolean("dejavumode", false);
+            editor.commit();
+            Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
+            getCameraImages(getApplicationContext());
         }
     }
 
@@ -198,6 +217,35 @@ public class MainActivity extends AppCompatActivity {
                                     (Activity) context,
                                     new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
                                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+                return false;
+            } else {
+                return true;
+            }
+
+        } else {
+            return true;
+        }
+    }
+
+    // from Android developer site; ask for permission to read external storage at runtime
+    public boolean checkPermissionACCESS_FINE_LOCATION (final Context context) {
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        (Activity) context,
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    showDialog("External storage", context,
+                            Manifest.permission.ACCESS_FINE_LOCATION);
+
+                } else {
+                    ActivityCompat
+                            .requestPermissions(
+                                    (Activity) context,
+                                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                 }
                 return false;
             } else {

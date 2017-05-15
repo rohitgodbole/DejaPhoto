@@ -32,6 +32,7 @@ public class NextPhotoActivity extends AppCompatActivity {
 
     static final double DIST_LIMIT = 30.48;
     static final long MILLISECONDS_IN_HOUR = 3600000;
+    static final long MILLISECONDS_IN_DAY = 86400000;
 
     // onCreate - runs when activity starts, cycles to next photo
     @Override
@@ -222,6 +223,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         double distance;
         if (locGPS != null) {
             distance = locGPS.distanceTo(locPic);
+            Toast.makeText(this, Double.toString(distance), Toast.LENGTH_SHORT).show();  // TODO
             if (distance <= DIST_LIMIT) {
                 return true;
             }
@@ -241,15 +243,16 @@ public class NextPhotoActivity extends AppCompatActivity {
             ExifInterface exif = new ExifInterface(pathName);
             String picTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
             if (picTime == null) return false;
-            Toast.makeText(this, picTime, Toast.LENGTH_SHORT).show();
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
 
             Date picDate = simpleDateFormat.parse(picTime);
             Date currentDate = new Date();
-            long timediff = picDate.getTime() - currentDate.getTime();
-            if (timediff <= MILLISECONDS_IN_HOUR)
+            long timediff = currentDate.getTime() - picDate.getTime();
+            long diff = timediff % MILLISECONDS_IN_DAY;
+            if (diff <= MILLISECONDS_IN_HOUR || diff >= MILLISECONDS_IN_DAY - MILLISECONDS_IN_HOUR) {
                 return true;
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -266,7 +269,7 @@ public class NextPhotoActivity extends AppCompatActivity {
             ExifInterface exif = new ExifInterface(pathName);
             String picTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
             if (picTime == null) return false;
-            Toast.makeText(this, picTime, Toast.LENGTH_SHORT).show();
+
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
 
