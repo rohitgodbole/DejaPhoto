@@ -30,7 +30,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Refresh Camera Gallery"
+            android:text="Refresh"
             android:id="@+id/refresh"/>
 
         <Switch
@@ -38,6 +38,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/dejavumode"
             android:text="Deja Vu Mode: "/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Rate"
+            android:textSize="24sp" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

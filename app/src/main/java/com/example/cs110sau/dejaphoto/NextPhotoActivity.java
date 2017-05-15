@@ -36,7 +36,21 @@ public class NextPhotoActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
 
-        // Shuffle between photos based on their relative probabilities
+
+        // If deja vu mode is on, adjust scores of each photo
+        if (sharedPreferences.getBoolean("dejavumode", false) == true) {
+            int size = sharedPreferences.getInt("size", 0); // size of picture array
+            for (int i = 0; i < size; i++) {
+                String pathName = sharedPreferences.getString(Integer.toString(i), null);
+                if (pathName != null && !pathName.equals("RELEASED")) {
+                    float multiplier = adjustPicScores(pathName);
+                    int score = sharedPreferences.getInt(Integer.toString(i) + "score", 0);
+                    editor.putInt(Integer.toString(i) + "score", (int) (score * multiplier));
+                }
+            }
+        }
+
+        // Shuffle between photos based on their relative probabilities (determined by scores)
         int totalScore = sharedPreferences.getInt("totalScore", 0);
         if (totalScore == 0) {
             Toast.makeText(this, "Error: no unreleased photos", Toast.LENGTH_SHORT).show();
@@ -44,19 +58,19 @@ public class NextPhotoActivity extends AppCompatActivity {
         }
         int rand = (int)(totalScore * Math.random());
         int tracker = 0;
-        int ourIndex = 0;
-        int increment = sharedPreferences.getInt(Integer.toString(ourIndex) + "score", 1);
+        int index = 0;
+        int increment = sharedPreferences.getInt(Integer.toString(index) + "score", 1);
         while (tracker + increment < rand) {
-            ourIndex++;
+            index++;
             tracker += increment;
-            while (sharedPreferences.getString(Integer.toString(ourIndex),"RELEASED") == "RELEASED") {
-                ourIndex++;
+            while (sharedPreferences.getString(Integer.toString(index),"RELEASED") == "RELEASED") {
+                index++;
             }
-            increment = sharedPreferences.getInt(Integer.toString(ourIndex) + "score", 1);
+            increment = sharedPreferences.getInt(Integer.toString(index) + "score", 1);
         }
-        String nextPicName = sharedPreferences.getString(Integer.toString(ourIndex),"ERROR");
+        String nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
 
-        editor.putInt("index", ourIndex);
+        editor.putInt("index", index);
         editor.commit();
 
         if (nextPicName.equals("ERROR")) {
@@ -146,6 +160,47 @@ public class NextPhotoActivity extends AppCompatActivity {
             e.printStackTrace();
             return "Failed to get location.";
         }
+    }
+
+    // adjustPicScores: called if Deja Vu Mode is on. Increases a picture's score if it matches the
+    //   user's location, time of day, or day of the week at the time the button is pressed
+    //   Returns the multiplier to be applied to each score
+    public float adjustPicScores (String pathName) {
+
+        float multiplier = 1;
+
+        // Adjust based on location
+        if (matchLocation(pathName)) {
+            multiplier *= 1.5;
+        }
+
+        // Adjust based on time of day (and account for time zone)
+        if (matchTime(pathName)) {
+            multiplier *= 1.5;
+        }
+
+        // Adjust based on day of week
+        if (matchDay(pathName)) {
+            multiplier *= 1.5;
+        }
+
+        return multiplier;
+    }
+
+    // TODO: header & write
+    public boolean matchLocation(String pathName) {
+        return false;
+    }
+
+
+    // TODO: header & write
+    public boolean matchTime(String pathName) {
+        return false;
+    }
+
+    // TODO: header & write
+    public boolean matchDay(String pathName) {
+        return false;
     }
 
 }

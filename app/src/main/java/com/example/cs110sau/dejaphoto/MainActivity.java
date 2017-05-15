@@ -2,6 +2,7 @@ package com.example.cs110sau.dejaphoto;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,7 +12,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,23 +24,30 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-
     // TODO edge case when there are no pics in the phone?
 
-    // unique number that is used to request permission to read storage
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
 
     Button refresh;
     Switch dejavumode;
+
+    Spinner spinner;
+    ArrayAdapter adapter;
 
     /* Runs when activity is started */
     @Override
@@ -54,24 +64,11 @@ public class MainActivity extends AppCompatActivity {
         /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
         dejavumode = (Switch) findViewById(R.id.dejavumode);
+        dejavumode.setChecked(true);  // deja vu mode is on by default
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {                getCameraImages(getApplicationContext());  }
-        });
-
-        dejavumode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (isChecked) {
-                    editor.putBoolean("dejavumode", true);
-                }
-                else {
-                    editor.putBoolean("dejavumode", false);
-                }
-            }
         });
     }
 
@@ -117,8 +114,9 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < pathNames.size(); i++) {
             String key = Integer.toString(i);
             editor.putString(key, pathNames.get(i));
-            editor.putInt(key + "score", 10);  // probability score 1-100, default is 10
-            totalScore += 10;
+            int score = 10;  // TODO calculate scores based on recency
+            editor.putInt(key + "score", score);  // probability score 1-100, default is 10
+            totalScore += score;
         }
 
         // don't mess with index, unless it's outside our new array of path names
@@ -136,23 +134,19 @@ public class MainActivity extends AppCompatActivity {
     /* onStop - once user exits app, if deja vu mode is on, adjust scores of each picture accordingly */
     protected void onStop() {
         super.onStop();
-        // TODO recalculate deja vu probabilities
-    }
-
-    /* uriToWallpaper: takes in a Uri as a parameter, changes picture to wallpaper */
-    public void uriToWallpaper(Uri picUri) {
-        WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
-        try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
-            w.setBitmap(bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (dejavumode.isChecked()) {
+            editor.putBoolean("dejavumode", true);
+        }
+        else {
+            editor.putBoolean("dejavumode", false);
         }
     }
 
-
     // from Android developer site; ask for permission to read external storage at runtime
-    public boolean checkPermissionREAD_EXTERNAL_STORAGE (final Context context) {
+    public boolean checkPermissionREAD_EXTERNAL_STORAGE(
+            final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
@@ -180,9 +174,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     // from Android developer site; helper method for checkPermission
-    public void showDialog (final String msg, final Context context, final String permission) {
+    public void showDialog(final String msg, final Context context,
+                           final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle("Permission necessary");
@@ -197,5 +191,40 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog alert = alertBuilder.create();
         alert.show();
+    }
+
+    private class AsyncTaskRunner extends AsyncTask<String, String, String>{
+        private String resp;
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            publishProgress("Sleeping");
+            try{
+                int time = Integer.parseInt(params[0])*1000;
+
+                Thread.sleep(time);
+                resp = "slept for "+params[0] + "seconds";
+            }catch(Exception e){
+                e.printStackTrace();
+                resp = e.getMessage();
+            }
+            return resp;
+        }
     }
 }
