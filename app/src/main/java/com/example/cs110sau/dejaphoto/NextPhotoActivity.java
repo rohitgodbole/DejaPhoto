@@ -75,17 +75,20 @@ public class NextPhotoActivity extends AppCompatActivity {
         String nextPicName = sharedPreferences.getString(Integer.toString(index), "ERROR");
 
         editor.putInt("index", index);
-        editor.commit();
 
         if (nextPicName.equals("ERROR")) {
             Toast.makeText(getApplicationContext(), "Error retrieving image", Toast.LENGTH_SHORT);
             return;
         }
 
+        updateRecentPhotos();
+        editor.putString("recentX", nextPicName);
+        editor.commit();
+
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         Bitmap bitmap = BitmapFactory.decodeFile(nextPicName);
 
-        // PRINT LOCATION (TODO)
+        // Print location
         Location nextPicLocation = getPicLocation(nextPicName);
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         String toPrint = null;
@@ -109,8 +112,10 @@ public class NextPhotoActivity extends AppCompatActivity {
     }
 
     // updateRecentPhotos: Updates 10 most recent photos while going forwards
-    public void updateRecentPhotos(String currentPic) {
+    public void updateRecentPhotos() {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+
+        String currentPic = sharedPreferences.getString("recentX", null);
 
         String[] recent = new String[10];
 
@@ -150,7 +155,6 @@ public class NextPhotoActivity extends AppCompatActivity {
         paint.setColor(Color.rgb(61, 61, 61));
         paint.setTextSize((int) (10 * scale));
         paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-        // TODO bitmap.getWidth() and bitmap.getHeight()
         int x = 0;
         int y = (int) metrics.ydpi + 35;
         canvas.drawText(text, x, y, paint);
