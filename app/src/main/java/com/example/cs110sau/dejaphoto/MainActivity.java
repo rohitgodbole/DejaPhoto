@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     Button changeWallpaper;
     Button refresh;
     Uri picUri;
-    Testuri test1;
     String testuri;          //string of valid pathname
     Canvas canvas = new Canvas();   //used to create a canvas to try to add location
 
@@ -157,16 +156,6 @@ public class MainActivity extends AppCompatActivity {
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
-            // display location on the homescreen
-            /*Bitmap mutable = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            canvas.setBitmap(mutable);
-            Paint paint = new Paint();
-            paint.setTextSize(1000);
-
-            canvas.drawText(readGeoTagImage(testuri),0, 0, paint);
-            canvas.drawBitmap(mutable,0,0,null);
-            */
-            // change to mutable below
             w.setBitmap(bitmap);
         } catch (IOException e) {
             e.printStackTrace();
@@ -184,10 +173,8 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 picUri = data.getData();
                 uriToWallpaper(picUri);
-                // toast for testing latitude
-                Toast.makeText(getApplicationContext(), readGeoTagImage(testuri), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Error setting wallpaper", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -243,35 +230,5 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog alert = alertBuilder.create();
         alert.show();
-    }
-
-
-
-    //takes pathname and get's lat and long and returns ... for not just lat i think
-    public String readGeoTagImage(String imagePath)
-    {
-        Location loc = new Location("");
-        String lat;
-        try {
-
-            Toast.makeText(getApplicationContext(), "Trying", Toast.LENGTH_SHORT).show();
-            ExifInterface exif = new ExifInterface(imagePath);
-            float [] latlong = new float[2] ;
-            Toast.makeText(getApplicationContext(), "Trying", Toast.LENGTH_SHORT).show();
-            if(exif.getLatLong(latlong)){
-                loc.setLatitude(latlong[0]);
-                loc.setLongitude(latlong[1]);
-            }
-
-            lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-            return loc.toString();
-            //SimpleDateFormat fmt_Exif = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
-            //loc.setTime(fmt_Exif.parse(date).getTime());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //return lat;
-        return "fail";
     }
 }

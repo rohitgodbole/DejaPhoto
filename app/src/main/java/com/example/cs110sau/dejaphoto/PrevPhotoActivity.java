@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-// TODO implement 10 most recent pics
-
 public class PrevPhotoActivity extends AppCompatActivity {
 
     @Override
@@ -26,31 +24,7 @@ public class PrevPhotoActivity extends AppCompatActivity {
             return;
         }
 
-        /*
-        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        int index = sharedPreferences.getInt("index", -1);
-        int size = sharedPreferences.getInt("size", 1);
-
-        String nextPicName = "";
-
-        do {
-            index++;
-            if (index >= size) {
-                index = 0;
-            }
-            nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
-        } while (nextPicName.equals("RELEASED"));
-
-        editor.putInt("index", index);
-        editor.commit();
-
-        if (nextPicName.equals("ERROR")) {
-            Toast.makeText(getApplicationContext(), "Error retrieving image", Toast.LENGTH_SHORT);
-            return;
-        }
-        */
+        // TODO print location when previous pic shows
 
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         Bitmap bitmap = BitmapFactory.decodeFile(nextPicName);

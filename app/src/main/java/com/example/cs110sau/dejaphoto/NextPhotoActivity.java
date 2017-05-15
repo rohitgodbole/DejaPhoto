@@ -37,10 +37,27 @@ public class NextPhotoActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // TODO probabilities
+        // TODO probabilities:
+        int totalScore = sharedPreferences.getInt("totalScore", 0);
+        if (totalScore == 0) {
+            Toast.makeText(this, "Error reading from list of photos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int rand = (int)(totalScore * Math.random());
+        int tracker = 0;
+        int ourIndex = 0;
+        int increment = sharedPreferences.getInt(Integer.toString(ourIndex) + "score", 1);
+        while (tracker + increment < rand) {
+            ourIndex++;
+            tracker += increment;
+            increment = sharedPreferences.getInt(Integer.toString(ourIndex) + "score", 1);
+        }
+        String nextPicName = sharedPreferences.getString(Integer.toString(ourIndex),"ERROR");
 
-        int index = sharedPreferences.getInt("index",-1);
-        int size = sharedPreferences.getInt("size",1);
+        /*
+
+        int index = sharedPreferences.getInt("index", -1);
+        int size = sharedPreferences.getInt("size", 1);
 
         String currentPic = sharedPreferences.getString(Integer.toString(index), null);
         String nextPicName = "";
@@ -56,8 +73,9 @@ public class NextPhotoActivity extends AppCompatActivity {
             }
             nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
         } while (nextPicName.equals("RELEASED"));
+        */
 
-        editor.putInt("index", index);
+        editor.putInt("index", ourIndex);
         editor.commit();
 
         if (nextPicName.equals("ERROR")) {
@@ -126,11 +144,11 @@ public class NextPhotoActivity extends AppCompatActivity {
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.rgb(61,61,61));
-        paint.setTextSize((int)(30*scale));
+        paint.setTextSize((int)(10*scale));
         paint.setShadowLayer(1f,0f,1f,Color.WHITE);
-        // TODO bitmap.getWidth() bitmap.getHeight()
+        // TODO bitmap.getWidth() and bitmap.getHeight()
         int x = 0;
-        int y = 350;
+        int y = (int) metrics.ydpi + 35;
         canvas.drawText(text, x, y, paint);
         return bitmap;
     }
@@ -141,8 +159,11 @@ public class NextPhotoActivity extends AppCompatActivity {
             float [] latlong = new float[2];
             exif.getLatLong(latlong);
             Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(latlong[0], latlong[1], 1);
-            return addresses.get(0).getFeatureName();
+            List<Address> addresses = geocoder.getFromLocation(latlong[0], latlong[1]+1, 1);  // TODO
+            if (addresses.size() > 0)
+                return addresses.get(0).getFeatureName();
+            else
+                return "Failed to get location.";
         }
         catch (IOException e) {
             e.printStackTrace();
