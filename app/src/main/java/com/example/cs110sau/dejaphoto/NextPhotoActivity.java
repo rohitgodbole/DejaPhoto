@@ -20,12 +20,16 @@ import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class NextPhotoActivity extends AppCompatActivity {
 
     static final double DIST_LIMIT = 30.48;
+    static final long MILLISECONDS_IN_HOUR = 3600000;
 
     // onCreate - runs when activity starts, cycles to next photo
     @Override
@@ -56,19 +60,19 @@ public class NextPhotoActivity extends AppCompatActivity {
             Toast.makeText(this, "Error: no unreleased photos", Toast.LENGTH_SHORT).show();
             return;
         }
-        int rand = (int)(totalScore * Math.random());
+        int rand = (int) (totalScore * Math.random());
         int tracker = 0;
         int index = 0;
         int increment = sharedPreferences.getInt(Integer.toString(index) + "score", 1);
         while (tracker + increment < rand) {
             index++;
             tracker += increment;
-            while (sharedPreferences.getString(Integer.toString(index),"RELEASED") == "RELEASED") {
+            while (sharedPreferences.getString(Integer.toString(index), "RELEASED") == "RELEASED") {
                 index++;
             }
             increment = sharedPreferences.getInt(Integer.toString(index) + "score", 1);
         }
-        String nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
+        String nextPicName = sharedPreferences.getString(Integer.toString(index), "ERROR");
 
         editor.putInt("index", index);
         editor.commit();
@@ -91,26 +95,24 @@ public class NextPhotoActivity extends AppCompatActivity {
                 toPrint = addresses.get(0).getFeatureName();
             else
                 toPrint = "Location info not found.";
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         bitmap = drawTextToBitmap(getApplicationContext(), bitmap, toPrint);
 
         try {
             w.setBitmap(bitmap);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
     // updateRecentPhotos: Updates 10 most recent photos while going forwards
-    public void updateRecentPhotos (String currentPic) {
+    public void updateRecentPhotos(String currentPic) {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
 
-        String [] recent = new String[10];
+        String[] recent = new String[10];
 
         for (int i = 0; i < 10; i++) {
             recent[i] = sharedPreferences.getString("recent" + i, null);
@@ -122,7 +124,7 @@ public class NextPhotoActivity extends AppCompatActivity {
                 recent[i + 1] = recent[i];
             }
         }
-            recent[0] = currentPic;
+        recent[0] = currentPic;
 
         // write 10 most recent to sharedPref file
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -134,7 +136,7 @@ public class NextPhotoActivity extends AppCompatActivity {
 
     // drawTextToBitmap: Takes in a bitmap, returns the same bitmap with
     //   text (passed in as parameter) written to bottom left corner
-    public Bitmap drawTextToBitmap (Context context, Bitmap bitmap, String text) {
+    public Bitmap drawTextToBitmap(Context context, Bitmap bitmap, String text) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
         float scale = resources.getDisplayMetrics().density;
@@ -142,12 +144,12 @@ public class NextPhotoActivity extends AppCompatActivity {
         if (bitmapConfig == null) {
             bitmapConfig = Bitmap.Config.ARGB_8888;
         }
-        bitmap = bitmap.copy(bitmapConfig,true);
+        bitmap = bitmap.copy(bitmapConfig, true);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.rgb(61,61,61));
-        paint.setTextSize((int)(10*scale));
-        paint.setShadowLayer(1f,0f,1f,Color.WHITE);
+        paint.setColor(Color.rgb(61, 61, 61));
+        paint.setTextSize((int) (10 * scale));
+        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
         // TODO bitmap.getWidth() and bitmap.getHeight()
         int x = 0;
         int y = (int) metrics.ydpi + 35;
@@ -156,11 +158,11 @@ public class NextPhotoActivity extends AppCompatActivity {
     }
 
     // getPicLocation: given the path name of a string, get the name of the location where it was taken
-    public Location getPicLocation (String pathName) {
+    public Location getPicLocation(String pathName) {
 
         try {
             ExifInterface exif = new ExifInterface(pathName);
-            float [] latlong = new float[2];
+            float[] latlong = new float[2];
             exif.getLatLong(latlong);
             float latitude = latlong[0];
             float longitude = latlong[1];
@@ -170,8 +172,7 @@ public class NextPhotoActivity extends AppCompatActivity {
             location.setLongitude(longitude);
 
             return location;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -182,7 +183,7 @@ public class NextPhotoActivity extends AppCompatActivity {
     // adjustPicScores: called if Deja Vu Mode is on. Increases a picture's score if it matches the
     //   user's location, time of day, or day of the week at the time the button is pressed
     //   Returns the multiplier to be applied to each score
-    public float adjustPicScores (String pathName) {
+    public float adjustPicScores(String pathName) {
 
         float multiplier = 1;
 
@@ -219,8 +220,7 @@ public class NextPhotoActivity extends AppCompatActivity {
             if (distance <= DIST_LIMIT) {
                 return true;
             }
-        }
-        else if (locNet != null) {
+        } else if (locNet != null) {
             distance = locGPS.distanceTo(locPic);
             if (distance <= DIST_LIMIT) {
                 return true;
@@ -230,13 +230,53 @@ public class NextPhotoActivity extends AppCompatActivity {
     }
 
 
-    // TODO: header & write
+    // matchTime: return true if picture's time is within an hour of the current time
     public boolean matchTime(String pathName) {
+        try {
+            ExifInterface exif = new ExifInterface(pathName);
+            String picTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
+            if (picTime == null) return false;
+            Toast.makeText(this, picTime, Toast.LENGTH_SHORT).show();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+
+            Date picDate = simpleDateFormat.parse(picTime);
+            Date currentDate = new Date();
+            long timediff = picDate.getTime() - currentDate.getTime();
+            if (timediff <= MILLISECONDS_IN_HOUR)
+                return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
-    // TODO: header & write
+    // matchDay: return true if the day of the week the picture was taken on is the same as the
+    //   day of the week the method is called
     public boolean matchDay(String pathName) {
+        try {
+            ExifInterface exif = new ExifInterface(pathName);
+            String picTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
+            if (picTime == null) return false;
+            Toast.makeText(this, picTime, Toast.LENGTH_SHORT).show();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+
+            Date picDate = simpleDateFormat.parse(picTime);
+            Date currentDate = new Date();
+
+            // Date's toString method begins w/ 3-letter code for day of week
+            if (picDate.toString().substring(0,2).equals(currentDate.toString().substring(0,2)))
+                return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 

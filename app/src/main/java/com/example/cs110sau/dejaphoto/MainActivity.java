@@ -2,6 +2,7 @@ package com.example.cs110sau.dejaphoto;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
@@ -13,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,7 +35,10 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,8 +47,10 @@ public class MainActivity extends AppCompatActivity {
     // TODO edge case when there are no pics in the phone?
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
+    static final long MILLISECONDS_IN_HOUR = 3600000;
+    static final long HOURS_IN_MONTH = 730;
 
-    Button refresh;
+            Button refresh;
     Switch dejavumode;
 
     Spinner spinner;
@@ -109,15 +116,34 @@ public class MainActivity extends AppCompatActivity {
 
         editor.putInt("size", pathNames.size());
 
-        // TODO replace with "app started" message?
-        Toast.makeText(getApplicationContext(), "Size: "+pathNames.size(), Toast.LENGTH_SHORT).show();
-
         int totalScore = 0; // keeps track of cumulative probability scores of photos
+
+        // Give each photo a probability score 1-100, default is 10
         for (int i = 0; i < pathNames.size(); i++) {
             String key = Integer.toString(i);
             editor.putString(key, pathNames.get(i));
-            int score = 10;  // TODO calculate scores based on recency
-            editor.putInt(key + "score", score);  // probability score 1-100, default is 10
+            // Calculate scores based on recency
+            int monthsSincePhoto = 0;
+            try {
+                ExifInterface exif = new ExifInterface(pathNames.get(i));
+                String picTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
+                Toast.makeText(context, picTime, Toast.LENGTH_SHORT).show();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+                Date picDate = simpleDateFormat.parse(picTime);
+                Date currentDate = new Date();
+                long timediff = picDate.getTime() - currentDate.getTime();
+                monthsSincePhoto = (int) ((timediff / MILLISECONDS_IN_HOUR) / HOURS_IN_MONTH);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            catch (ParseException e) {
+                e.printStackTrace();
+            }
+            int score = 10 - monthsSincePhoto / 6;
+            if (score <= 0)
+                score = 1;
+            editor.putInt(key + "score", score);
             totalScore += score;
         }
 
