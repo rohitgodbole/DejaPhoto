@@ -7,11 +7,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
-
 import java.io.IOException;
 
 public class PrevPhotoActivity extends AppCompatActivity {
 
+    // onCreate: runs when activity is started, switches wallpaper to most recently selected photo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         finish();

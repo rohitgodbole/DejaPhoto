@@ -11,10 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.location.Location;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,25 +22,22 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
     // TODO edge case when there are no pics in the phone?
 
-    private static final int CHOOSE_PIC_CODE = 12345;
+    // unique number that is used to request permission to read storage
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
 
-    Button changeWallpaper;
     Button refresh;
-    Uri picUri;
-    String testuri;          //string of valid pathname
-    Canvas canvas = new Canvas();   //used to create a canvas to try to add location
-
-
+    Switch dejavumode;
 
     /* Runs when activity is started */
     @Override
@@ -58,29 +51,32 @@ public class MainActivity extends AppCompatActivity {
 
         List<String> pathNames = getCameraImages(getApplicationContext());
 
-        /* onClick listeners for buttons */
-        changeWallpaper = (Button) findViewById(R.id.chooseWallpaper);
+        /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
-
-        changeWallpaper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseWallpaper(view);
-            }
-        });
+        dejavumode = (Switch) findViewById(R.id.dejavumode);
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                getCameraImages(getApplicationContext());
+            public void onClick(View view) {                getCameraImages(getApplicationContext());  }
+        });
+
+        dejavumode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (isChecked) {
+                    editor.putBoolean("dejavumode", true);
+                }
+                else {
+                    editor.putBoolean("dejavumode", false);
+                }
             }
         });
     }
 
-
-
-    /* TODO modify below method?
-    * getCameraImages - should get the Uri of all photos and store into an array of strings */
+    /* getCameraImages - gets the path of every photo taken by the phone's camera and stores them
+     *   as strings. Also writes corresponding data about the photos to the sharedPreferences file. */
     @SuppressWarnings({"SecurityException", "MissingPermission"})
     public List<String> getCameraImages(Context context) {
 
@@ -137,19 +133,11 @@ public class MainActivity extends AppCompatActivity {
         return pathNames;
     }
 
-
-
-    /* chooseWallpaper: Allows user to choose a picture in the gallery to change to their wallpaper */
-    public void chooseWallpaper(View view) {
-
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(intent, CHOOSE_PIC_CODE);
-
+    /* onStop - once user exits app, if deja vu mode is on, adjust scores of each picture accordingly */
+    protected void onStop() {
+        super.onStop();
+        // TODO recalculate deja vu probabilities
     }
-
-
 
     /* uriToWallpaper: takes in a Uri as a parameter, changes picture to wallpaper */
     public void uriToWallpaper(Uri picUri) {
@@ -163,27 +151,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    /* TODO Method Header: onActivityResult */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == CHOOSE_PIC_CODE && resultCode == RESULT_OK) {
-            if (data != null) {
-                picUri = data.getData();
-                uriToWallpaper(picUri);
-            } else {
-                Toast.makeText(getApplicationContext(), "Error setting wallpaper", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-
-
     // from Android developer site; ask for permission to read external storage at runtime
-    public boolean checkPermissionREAD_EXTERNAL_STORAGE(
-            final Context context) {
+    public boolean checkPermissionREAD_EXTERNAL_STORAGE (final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
@@ -212,10 +181,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     // from Android developer site; helper method for checkPermission
-    public void showDialog(final String msg, final Context context,
-                           final String permission) {
+    public void showDialog (final String msg, final Context context, final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle("Permission necessary");

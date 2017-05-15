@@ -25,8 +25,6 @@ import java.util.Set;
 
 public class NextPhotoActivity extends AppCompatActivity {
 
-    // TODO known bug: if all photos are released, app will cycle in an infinite loop
-
     // onCreate - runs when activity starts, cycles to next photo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +35,11 @@ public class NextPhotoActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // TODO probabilities:
+
+        // Shuffle between photos based on their relative probabilities
         int totalScore = sharedPreferences.getInt("totalScore", 0);
         if (totalScore == 0) {
-            Toast.makeText(this, "Error reading from list of photos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error: no unreleased photos", Toast.LENGTH_SHORT).show();
             return;
         }
         int rand = (int)(totalScore * Math.random());
@@ -50,30 +49,12 @@ public class NextPhotoActivity extends AppCompatActivity {
         while (tracker + increment < rand) {
             ourIndex++;
             tracker += increment;
+            while (sharedPreferences.getString(Integer.toString(ourIndex),"RELEASED") == "RELEASED") {
+                ourIndex++;
+            }
             increment = sharedPreferences.getInt(Integer.toString(ourIndex) + "score", 1);
         }
         String nextPicName = sharedPreferences.getString(Integer.toString(ourIndex),"ERROR");
-
-        /*
-
-        int index = sharedPreferences.getInt("index", -1);
-        int size = sharedPreferences.getInt("size", 1);
-
-        String currentPic = sharedPreferences.getString(Integer.toString(index), null);
-        String nextPicName = "";
-
-        if (currentPic != null) {
-            updateRecentPhotos (currentPic);
-        }
-
-        do {
-            index++;
-            if (index >= size) {
-                index = 0;
-            }
-            nextPicName = sharedPreferences.getString(Integer.toString(index),"ERROR");
-        } while (nextPicName.equals("RELEASED"));
-        */
 
         editor.putInt("index", ourIndex);
         editor.commit();
@@ -96,11 +77,7 @@ public class NextPhotoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-
     }
-
-
 
     // updateRecentPhotos: Updates 10 most recent photos while going forwards
     public void updateRecentPhotos (String currentPic) {
@@ -128,10 +105,8 @@ public class NextPhotoActivity extends AppCompatActivity {
         editor.commit();
     }
 
-
-
-
-
+    // drawTextToBitmap: Takes in a bitmap, returns the same bitmap with
+    //   text (passed in as parameter) written to bottom left corner
     public Bitmap drawTextToBitmap (Context context, Bitmap bitmap, String text) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
@@ -153,6 +128,8 @@ public class NextPhotoActivity extends AppCompatActivity {
         return bitmap;
     }
 
+    // getPicLocation: given the path name of a string, get the name of the location where it was taken
+    //   (as a name we can interpret, not a latitude/longitude)
     public String getPicLocation (String pathName) {
         try {
             ExifInterface exif = new ExifInterface(pathName);
