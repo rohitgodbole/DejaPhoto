@@ -127,12 +127,13 @@ public class MainActivity extends AppCompatActivity {
             try {
                 ExifInterface exif = new ExifInterface(pathNames.get(i));
                 String picTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
-                Toast.makeText(context, picTime, Toast.LENGTH_SHORT).show();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
-                Date picDate = simpleDateFormat.parse(picTime);
-                Date currentDate = new Date();
-                long timediff = picDate.getTime() - currentDate.getTime();
-                monthsSincePhoto = (int) ((timediff / MILLISECONDS_IN_HOUR) / HOURS_IN_MONTH);
+                if (picTime != null) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+                    Date picDate = simpleDateFormat.parse(picTime);
+                    Date currentDate = new Date();
+                    long timediff = picDate.getTime() - currentDate.getTime();
+                    monthsSincePhoto = (int) ((timediff / MILLISECONDS_IN_HOUR) / HOURS_IN_MONTH);
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();
