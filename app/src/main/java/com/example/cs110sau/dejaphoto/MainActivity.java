@@ -44,7 +44,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    // TODO edge case when there are no pics in the phone?
+    // TODO edge case when there are no pics in the phone
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
     static final long MILLISECONDS_IN_HOUR = 3600000;
@@ -68,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO might need to give more permissions at runtime
 
-        List<String> pathNames = getCameraImages(getApplicationContext());
+        // refresh automatically if picture database is empty (a.k.a. first element is null)
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        if (sharedPreferences.getString("0", null) == null)
+            getCameraImages(getApplicationContext());
 
         /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
@@ -77,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {                getCameraImages(getApplicationContext());  }
+            public void onClick(View view) {
+                getCameraImages(getApplicationContext());
+            }
         });
     }
 
@@ -157,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putInt("totalScore", totalScore); // write total score, which determines probability
         editor.commit();
 
+        Toast.makeText(context, "Photos Loaded From Camera", Toast.LENGTH_SHORT).show();
         return pathNames;
     }
 

@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,6 +18,7 @@ import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -144,26 +146,27 @@ public class NextPhotoActivity extends AppCompatActivity {
     public Bitmap drawTextToBitmap(Context context, Bitmap bitmap, String text) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
-        float scale = resources.getDisplayMetrics().density;
+
         android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
         if (bitmapConfig == null) {
             bitmapConfig = Bitmap.Config.ARGB_8888;
         }
-        bitmap = bitmap.copy(bitmapConfig, true);
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, metrics.widthPixels, metrics.heightPixels, false);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.rgb(61, 61, 61));
-        paint.setTextSize((int) (10 * scale));
-        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(canvas.getHeight()*40/1000);
+        paint.setShadowLayer(1f, 0f, 1f, Color.BLACK);
         int x = 0;
-        int y = (int) metrics.ydpi + 35;
+        int y = (int)(canvas.getHeight() * 0.78);
+
         canvas.drawText(text, x, y, paint);
         return bitmap;
     }
 
     // getPicLocation: given the path name of a string, get the name of the location where it was taken
     public Location getPicLocation(String pathName) {
-
         try {
             ExifInterface exif = new ExifInterface(pathName);
             float[] latlong = new float[2];
@@ -180,8 +183,6 @@ public class NextPhotoActivity extends AppCompatActivity {
             e.printStackTrace();
             return null;
         }
-
-
     }
 
     // adjustPicScores: called if Deja Vu Mode is on. Increases a picture's score if it matches the
