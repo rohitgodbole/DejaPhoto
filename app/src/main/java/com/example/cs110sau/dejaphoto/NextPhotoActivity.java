@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +22,10 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class NextPhotoActivity extends AppCompatActivity {
+
+    static final double DIST_LIMIT = 30.48;
 
     // onCreate - runs when activity starts, cycles to next photo
     @Override
@@ -34,8 +36,6 @@ public class NextPhotoActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-
-
 
         // If deja vu mode is on, adjust scores of each photo
         if (sharedPreferences.getBoolean("dejavumode", false) == true) {
@@ -82,7 +82,20 @@ public class NextPhotoActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(nextPicName);
 
         // PRINT LOCATION (TODO)
-        bitmap = drawTextToBitmap(getApplicationContext(), bitmap, getPicLocation(nextPicName));
+        Location nextPicLocation = getPicLocation(nextPicName);
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        String toPrint = null;
+        try {
+            List<Address> addresses = geocoder.getFromLocation(nextPicLocation.getLatitude(), nextPicLocation.getLongitude(), 1);
+            if (addresses.size() > 0)
+                toPrint = addresses.get(0).getFeatureName();
+            else
+                toPrint = "Location info not found.";
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        bitmap = drawTextToBitmap(getApplicationContext(), bitmap, toPrint);
 
         try {
             w.setBitmap(bitmap);
@@ -143,23 +156,27 @@ public class NextPhotoActivity extends AppCompatActivity {
     }
 
     // getPicLocation: given the path name of a string, get the name of the location where it was taken
-    //   (as a name we can interpret, not a latitude/longitude)
-    public String getPicLocation (String pathName) {
+    public Location getPicLocation (String pathName) {
+
         try {
             ExifInterface exif = new ExifInterface(pathName);
             float [] latlong = new float[2];
             exif.getLatLong(latlong);
-            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(latlong[0], latlong[1]+1, 1);  // TODO
-            if (addresses.size() > 0)
-                return addresses.get(0).getFeatureName();
-            else
-                return "Failed to get location.";
+            float latitude = latlong[0];
+            float longitude = latlong[1];
+
+            Location location = new Location("location"); // TODO
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+
+            return location;
         }
         catch (IOException e) {
             e.printStackTrace();
-            return "Failed to get location.";
+            return null;
         }
+
+
     }
 
     // adjustPicScores: called if Deja Vu Mode is on. Increases a picture's score if it matches the
@@ -187,8 +204,28 @@ public class NextPhotoActivity extends AppCompatActivity {
         return multiplier;
     }
 
-    // TODO: header & write
+    // matchLocation: return true if picture passed by parameter is within 100 feet of user
+    @SuppressWarnings({"SecurityException", "MissingPermission"})
     public boolean matchLocation(String pathName) {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location locGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location locNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location locPic = getPicLocation(pathName);
+        if (locPic == null)
+            return false;
+        double distance;
+        if (locGPS != null) {
+            distance = locGPS.distanceTo(locPic);
+            if (distance <= DIST_LIMIT) {
+                return true;
+            }
+        }
+        else if (locNet != null) {
+            distance = locGPS.distanceTo(locPic);
+            if (distance <= DIST_LIMIT) {
+                return true;
+            }
+        }
         return false;
     }
 

@@ -15,19 +15,21 @@ public class KarmaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         finish();
         super.onCreate(savedInstanceState);
-        Toast.makeText(this, "Added Karma", Toast.LENGTH_SHORT).show();
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
 
-
         int index = sharedPreferences.getInt("index", 0);
-        if (sharedPreferences.getBoolean(Integer.toString(index) + "karma", false) == true) {
+        if (sharedPreferences.getBoolean(Integer.toString(index) + "karma", false) == false) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(Integer.toString(index) + "karma", true);
             int score = sharedPreferences.getInt(Integer.toString(index)+"score", 0);
             score += 5;
             editor.putInt(Integer.toString(index) + "score", score);
             editor.commit();
+            Toast.makeText(this, "Added Karma", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Karma Already Added", Toast.LENGTH_SHORT).show();
         }
     }
 

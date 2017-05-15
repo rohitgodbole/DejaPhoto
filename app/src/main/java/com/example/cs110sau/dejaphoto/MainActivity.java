@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             checkPermissionREAD_EXTERNAL_STORAGE(this);
         }
 
+        // TODO might need to give more permissions at runtime
+
         List<String> pathNames = getCameraImages(getApplicationContext());
 
         /* onClick listeners for elements */
