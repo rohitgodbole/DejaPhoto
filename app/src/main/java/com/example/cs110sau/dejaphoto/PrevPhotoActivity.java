@@ -136,7 +136,7 @@ public class PrevPhotoActivity extends AppCompatActivity {
             float latitude = latlong[0];
             float longitude = latlong[1];
 
-            Location location = new Location("location"); // TODO
+            Location location = new Location("location");
             location.setLatitude(latitude);
             location.setLongitude(longitude);
 

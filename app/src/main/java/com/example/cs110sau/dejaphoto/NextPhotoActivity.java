@@ -128,7 +128,7 @@ public class NextPhotoActivity extends AppCompatActivity {
 
         // shift all recent photos down one
         if (recent[0] != null) {
-            for (int i = 8; i >= 0; i--) {  // TODO magic numbers/strings? (here and in the other files)
+            for (int i = 8; i >= 0; i--) {
                 recent[i + 1] = recent[i];
             }
         }
@@ -178,7 +178,7 @@ public class NextPhotoActivity extends AppCompatActivity {
             float latitude = latlong[0];
             float longitude = latlong[1];
 
-            Location location = new Location("location"); // TODO
+            Location location = new Location("location");
             location.setLatitude(latitude);
             location.setLongitude(longitude);
 
@@ -221,6 +221,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         Location locGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Location locNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         Location locPic = getPicLocation(pathName);
+
         if (locPic == null)
             return false;
         double distance;

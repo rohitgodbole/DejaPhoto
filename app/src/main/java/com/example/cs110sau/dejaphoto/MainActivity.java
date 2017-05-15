@@ -44,7 +44,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    // TODO edge case when there are no pics in the phone
 
     // unique ints to act as request codes
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
