@@ -145,6 +145,9 @@ public class NextPhotoActivity extends AppCompatActivity {
     // drawTextToBitmap: Takes in a bitmap, returns the same bitmap with
     //   text (passed in as parameter) written to bottom left corner
     public Bitmap drawTextToBitmap(Context context, Bitmap bitmap, String text) {
+        if (text == null)
+            return bitmap;
+
         Resources resources = context.getResources();
         DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
 
@@ -223,7 +226,6 @@ public class NextPhotoActivity extends AppCompatActivity {
         double distance;
         if (locGPS != null) {
             distance = locGPS.distanceTo(locPic);
-            Toast.makeText(this, Double.toString(distance), Toast.LENGTH_SHORT).show();  // TODO
             if (distance <= DIST_LIMIT) {
                 return true;
             }

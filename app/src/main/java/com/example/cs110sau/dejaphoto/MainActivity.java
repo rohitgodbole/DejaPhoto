@@ -72,13 +72,6 @@ public class MainActivity extends AppCompatActivity {
             checkPermissionACCESS_FINE_LOCATION(this);
         }
 
-        // TODO might need to give more permissions at runtime
-
-        // refresh automatically if picture database is empty (a.k.a. first element is null)
-        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-        if (sharedPreferences.getString("0", null) == null)
-            getCameraImages(getApplicationContext());
-
         /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
         dejavumode = (Switch) findViewById(R.id.dejavumode);
@@ -144,8 +137,6 @@ public class MainActivity extends AppCompatActivity {
                     Date currentDate = new Date();
                     long timediff = currentDate.getTime() - picDate.getTime();
                     monthsSincePhoto = (int) ((timediff / MILLISECONDS_IN_HOUR) / HOURS_IN_MONTH);
-                    Toast.makeText(context, picTime, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(context, "Months Since: "+monthsSincePhoto, Toast.LENGTH_SHORT).show();
                 }
             }
             catch (IOException e) {
@@ -177,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
 
         Toast.makeText(context, "Photos Loaded From Camera", Toast.LENGTH_SHORT).show();
+        finish();
         return pathNames;
     }
 
