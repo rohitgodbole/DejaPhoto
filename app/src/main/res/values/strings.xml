@@ -5,4 +5,10 @@
     <string name="title_activity_prev_photo">PrevPhotoActivity</string>
     <string name="title_activity_karma">KarmaActivity</string>
     <string name="title_activity_release">ReleaseActivity</string>
+    <string-array name="choose_rate">
+        <item>10 seconds</item>
+        <item>20 seconds</item>
+        <item>30 seconds</item>
+        <item>60 seconds</item>
+    </string-array>
 </resources>

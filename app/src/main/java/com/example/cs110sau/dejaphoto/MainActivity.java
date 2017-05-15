@@ -2,6 +2,7 @@ package com.example.cs110sau.dejaphoto;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.graphics.Paint;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,12 +27,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     // TODO edge case when there are no pics in the phone?
@@ -44,13 +51,30 @@ public class MainActivity extends AppCompatActivity {
     String testuri;          //string of valid pathname
     Canvas canvas = new Canvas();   //used to create a canvas to try to add location
 
-
+    Spinner spinner;
+    ArrayAdapter adapter;
 
     /* Runs when activity is started */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //TODO spinner to choose rate 
+        spinner = (Spinner) findViewById(R.id.spinner);
+        adapter = ArrayAdapter.createFromResource(this, R.array.choose_rate, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getBaseContext(), parent.getItemIdAtPosition(position) + "selected", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Toast.makeText(getBaseContext(), "nothing", Toast.LENGTH_SHORT);
+            }
+        });
 
         while (!checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             checkPermissionREAD_EXTERNAL_STORAGE(this);
@@ -75,6 +99,14 @@ public class MainActivity extends AppCompatActivity {
                 getCameraImages(getApplicationContext());
             }
         });
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                new AsyncTaskRunner().execute();
+            }
+        };
+        new Timer().scheduleAtFixedRate(task, 0, 5000);
     }
 
 
@@ -230,5 +262,40 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog alert = alertBuilder.create();
         alert.show();
+    }
+
+    private class AsyncTaskRunner extends AsyncTask<String, String, String>{
+        private String resp;
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            publishProgress("Sleeping");
+            try{
+                int time = Integer.parseInt(params[0])*1000;
+
+                Thread.sleep(time);
+                resp = "slept for "+params[0] + "seconds";
+            }catch(Exception e){
+                e.printStackTrace();
+                resp = e.getMessage();
+            }
+            return resp;
+        }
     }
 }
