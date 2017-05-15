@@ -24,10 +24,14 @@ public class PrevPhotoActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO print location when previous pic shows
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("recentX", nextPicName);
+        editor.commit();
 
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         Bitmap bitmap = BitmapFactory.decodeFile(nextPicName);
+
         try {
             w.setBitmap(bitmap);
         }
