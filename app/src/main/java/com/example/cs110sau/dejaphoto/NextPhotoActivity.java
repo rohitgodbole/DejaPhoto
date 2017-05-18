@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,7 +17,6 @@ import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;

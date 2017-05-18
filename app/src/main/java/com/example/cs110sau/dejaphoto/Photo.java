@@ -2,7 +2,6 @@ package com.example.cs110sau.dejaphoto;
 
 import android.location.Location;
 import android.net.Uri;
-
 import java.sql.Time;
 
 /**
@@ -25,6 +24,7 @@ public class Photo {
     int dayOfWeek;
     boolean karma;
     boolean released;
+    int score;
 
     // Getters:
     String getFilename() {
@@ -48,6 +48,9 @@ public class Photo {
     boolean isReleased() {
         return released;
     }
+    int getScore () {
+        return score;
+    }
 
     // Setters:
     void setFilename (String filename) {
@@ -70,5 +73,8 @@ public class Photo {
     }
     void setReleased (boolean released) {
         this.released = released;
+    }
+    void setScore (int score) {
+        this.score = score;
     }
 }

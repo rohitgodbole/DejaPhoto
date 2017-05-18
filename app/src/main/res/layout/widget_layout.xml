@@ -5,7 +5,6 @@
     android:padding="@dimen/widget_margin"
     android:gravity="center_horizontal">
 
-
     <ImageButton
         android:id="@+id/left"
         android:layout_width="56dp"

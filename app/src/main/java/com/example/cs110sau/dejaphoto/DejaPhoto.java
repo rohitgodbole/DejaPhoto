@@ -21,6 +21,7 @@ public class DejaPhoto {
 
     // Fields
     ArrayList<Photo> photos;
+    ArrayList<Photo> recent;
     boolean dejaVuMode;
     Context context;
     // TODO variable for automatic refresh rate
@@ -28,6 +29,7 @@ public class DejaPhoto {
     // Methods:
     void nextPhoto() {}
     void prevPhoto() {}
+    void updateScores() {}
     void addKarma(Photo photo) {}
     void release(Photo photo) {}
 

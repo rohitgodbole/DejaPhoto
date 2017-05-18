@@ -25,7 +25,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -132,11 +136,9 @@ public class MainActivity extends AppCompatActivity {
                     long timediff = currentDate.getTime() - picDate.getTime();
                     monthsSincePhoto = (int) ((timediff / MILLISECONDS_IN_HOUR) / HOURS_IN_MONTH);
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
-            }
-            catch (ParseException e) {
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
             int score = 10 - monthsSincePhoto / 6;
@@ -175,12 +177,25 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("dejavumode", true);
             editor.commit();
             Toast.makeText(this, "Deja Vu Mode On", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             editor.putBoolean("dejavumode", false);
             editor.commit();
             Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
             getCameraImages(getApplicationContext());
+        }
+
+        // Write DejaPhoto object to internal storage before closing app
+        try {
+            File DejaPhotoFile = new File("DejaPhoto");
+            if (!DejaPhotoFile.exists()) {
+                DejaPhotoFile.createNewFile();
+            }
+            FileOutputStream fileOutputStream = openFileOutput(DejaPhotoFile.getName(), Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(dejaPhoto);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to save DejaPhoto settings", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -201,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     ActivityCompat
                             .requestPermissions(
                                     (Activity) context,
-                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 }
                 return false;
@@ -215,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // from Android developer site; ask for permission to read external storage at runtime
-    public boolean checkPermissionACCESS_FINE_LOCATION (final Context context) {
+    public boolean checkPermissionACCESS_FINE_LOCATION(final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
@@ -230,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                     ActivityCompat
                             .requestPermissions(
                                     (Activity) context,
-                                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                 }
                 return false;
@@ -254,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions((Activity) context,
-                                new String[] { permission },
+                                new String[]{permission},
                                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                     }
                 });
@@ -262,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String>{
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         private String resp;
         ProgressDialog progressDialog;
 
@@ -284,12 +299,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             publishProgress("Sleeping");
-            try{
-                int time = Integer.parseInt(params[0])*1000;
+            try {
+                int time = Integer.parseInt(params[0]) * 1000;
 
                 Thread.sleep(time);
-                resp = "slept for "+params[0] + "seconds";
-            }catch(Exception e){
+                resp = "slept for " + params[0] + "seconds";
+            } catch (Exception e) {
                 e.printStackTrace();
                 resp = e.getMessage();
             }

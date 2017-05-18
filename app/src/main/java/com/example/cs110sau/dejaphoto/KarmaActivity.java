@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import static java.lang.Boolean.TRUE;
-
 public class KarmaActivity extends AppCompatActivity {
 
     // onCreate: runs when the activity is started.
