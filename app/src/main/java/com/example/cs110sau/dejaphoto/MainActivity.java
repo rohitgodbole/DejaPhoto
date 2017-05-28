@@ -26,6 +26,11 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
 
     Button refresh;
     Switch dejavumode;
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     Spinner spinner;
     ArrayAdapter adapter;
@@ -184,19 +192,11 @@ public class MainActivity extends AppCompatActivity {
             getCameraImages(getApplicationContext());
         }
 
-        // Write DejaPhoto object to internal storage before closing app
-        try {
-            File DejaPhotoFile = new File("DejaPhoto");
-            if (!DejaPhotoFile.exists()) {
-                DejaPhotoFile.createNewFile();
-            }
-            FileOutputStream fileOutputStream = openFileOutput(DejaPhotoFile.getName(), Context.MODE_PRIVATE);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(dejaPhoto);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to save DejaPhoto settings", Toast.LENGTH_SHORT).show();
-        }
+        // Before closing app, save DejaPhoto data to Firebase (TODO)
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+        myRef.child("testfolder").setValue("dejaPhoto");
+
     }
 
     // from Android developer site; ask for permission to read external storage at runtime

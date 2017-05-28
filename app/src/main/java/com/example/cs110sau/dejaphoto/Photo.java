@@ -11,7 +11,7 @@ import java.sql.Time;
 public class Photo {
 
     // Constructor: Passes in filename and initializes fields
-    Photo (String filename) {
+    public Photo (String filename) {
         this.filename = filename;
         // initialize fields using filename
     }
@@ -27,54 +27,54 @@ public class Photo {
     int score;
 
     // Getters:
-    String getFilename() {
+    public String getFilename() {
         return filename;
     }
-    Uri getUri() {
+    public Uri getUri() {
         return uri;
     }
-    Location getLocation() {
+    public Location getLocation() {
         return location;
     }
-    Time getTime() {
+    public Time getTime() {
         return time;
     }
-    int getDayOfWeek() {
+    public int getDayOfWeek() {
         return dayOfWeek;
     }
-    boolean isKarmaOn() {
+    public boolean isKarmaOn() {
         return karma;
     }
-    boolean isReleased() {
+    public boolean isReleased() {
         return released;
     }
-    int getScore () {
+    public int getScore () {
         return score;
     }
 
     // Setters:
-    void setFilename (String filename) {
+    public void setFilename (String filename) {
         this.filename = filename;
     }
-    void setUri (Uri uri) {
+    public void setUri (Uri uri) {
         this.uri = uri;
     }
-    void setLocation (Location location) {
+    public void setLocation (Location location) {
         this.location = location;
     }
-    void setTime (Time time) {
+    public void setTime (Time time) {
         this.time = time;
     }
-    void setDayOfWeek (int dayOfWeek) {
+    public void setDayOfWeek (int dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
-    void setKarma (boolean karma) {
+    public void setKarma (boolean karma) {
         this.karma = karma;
     }
-    void setReleased (boolean released) {
+    public void setReleased (boolean released) {
         this.released = released;
     }
-    void setScore (int score) {
+    public void setScore (int score) {
         this.score = score;
     }
 }

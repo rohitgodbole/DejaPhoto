@@ -14,9 +14,10 @@ import java.util.ArrayList;
 public class DejaPhoto {
 
     // Constructor
-    DejaPhoto (Context context) {
+    public DejaPhoto (Context context) {
         this.photos = null;
         this.context = context;
+        this.size = 0;
     }
 
     // Fields
@@ -24,29 +25,31 @@ public class DejaPhoto {
     ArrayList<Photo> recent;
     boolean dejaVuMode;
     Context context;
-    // TODO variable for automatic refresh rate
+    int size;
+    // TODO variable for automatic refresh rate?
 
     // Methods:
-    void nextPhoto() {}
-    void prevPhoto() {}
-    void updateScores() {}
-    void addKarma(Photo photo) {}
-    void release(Photo photo) {}
+    public void nextPhoto() {}
+    public void prevPhoto() {}
+    public void updateScores() {}
+    public void addKarma(Photo photo) {}
+    public void release(Photo photo) {}
+    public void addPhoto (Photo photo) {}; // don't forget to size++
 
     // Getters:
-    Photo getCurrentPhoto() {
+    public Photo getCurrentPhoto() {
         return photos.get(0);
     }
-    boolean isDejaVuModeOn() {
+    public boolean isDejaVuModeOn() {
         return false;
     }
 
     // Setters:
-    void setCurrentPhoto(Photo photo) {
+    public void setCurrentPhoto(Photo photo) {
         WallpaperManager w = WallpaperManager.getInstance(context);
         Bitmap bitmap = BitmapFactory.decodeFile(photo.getFilename());
     }
-    void setDejaVuMode(boolean dejaVuMode) {
+    public void setDejaVuMode(boolean dejaVuMode) {
         this.dejaVuMode = dejaVuMode;
     }
 
