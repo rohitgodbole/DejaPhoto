@@ -4,9 +4,6 @@ import android.location.Location;
 import android.net.Uri;
 import java.sql.Time;
 
-/**
- * Created by rohit on 5/17/2017.
- */
 
 public class Photo {
 

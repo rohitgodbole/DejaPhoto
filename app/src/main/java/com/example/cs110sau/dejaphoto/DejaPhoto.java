@@ -7,17 +7,19 @@ import android.graphics.BitmapFactory;
 
 import java.util.ArrayList;
 
-/**
- * Created by rohit on 5/17/2017.
- */
+// TODO below implementation works BUT what we should be writing to Firebase are just the
+// filenames (paths) of the photos & their karma scores
 
 public class DejaPhoto {
 
     // Constructor
     public DejaPhoto (Context context) {
         this.photos = null;
+        this.recent = null;
+        this.dejaVuMode = false;
         this.context = context;
         this.size = 0;
+        this.databaseStorage = new DatabaseStorage();
     }
 
     // Fields
@@ -26,6 +28,7 @@ public class DejaPhoto {
     boolean dejaVuMode;
     Context context;
     int size;
+    DatabaseStorage databaseStorage;
     // TODO variable for automatic refresh rate?
 
     // Methods:
@@ -34,7 +37,7 @@ public class DejaPhoto {
     public void updateScores() {}
     public void addKarma(Photo photo) {}
     public void release(Photo photo) {}
-    public void addPhoto (Photo photo) {}; // don't forget to size++
+    public void addPhoto (Photo photo) {}; // don't forget to size++ & update database
 
     // Getters:
     public Photo getCurrentPhoto() {
@@ -43,6 +46,7 @@ public class DejaPhoto {
     public boolean isDejaVuModeOn() {
         return false;
     }
+    public DatabaseStorage getDatabaseStorage() { return databaseStorage; }
 
     // Setters:
     public void setCurrentPhoto(Photo photo) {

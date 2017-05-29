@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         // Before closing app, save DejaPhoto data to Firebase (TODO)
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
-        myRef.child("testfolder").setValue("dejaPhoto");
+        myRef.child("USERID").setValue(dejaPhoto.getDatabaseStorage());
 
     }
 
