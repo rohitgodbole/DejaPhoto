@@ -27,17 +27,11 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Switch
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dejavumode"
-            android:text="Deja Vu Mode: "/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get Camera Pictures"
-            android:id="@+id/refresh"/>
+            android:textSize="36dp"
+            android:text="DejaPhoto"/>
 
         <TextView
             android:id="@+id/textView"
@@ -52,6 +46,42 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible" />
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dejavumode"
+            android:text="Deja Vu Mode: "/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Get Camera Pictures"
+            android:id="@+id/refresh"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Import Photos"
+            android:id="@+id/importphotos"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Take Photo"
+            android:id="@+id/takephoto"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Friends"
+            android:id="@+id/friends"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:id="@+id/settings"/>
 
     </LinearLayout>
 

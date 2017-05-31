@@ -19,7 +19,6 @@ public class DejaPhoto {
         this.dejaVuMode = false;
         this.context = context;
         this.size = 0;
-        this.databaseStorage = new DatabaseStorage();
     }
 
     // Fields
@@ -28,7 +27,6 @@ public class DejaPhoto {
     boolean dejaVuMode;
     Context context;
     int size;
-    DatabaseStorage databaseStorage;
     // TODO variable for automatic refresh rate?
 
     // Methods:
@@ -46,7 +44,6 @@ public class DejaPhoto {
     public boolean isDejaVuModeOn() {
         return false;
     }
-    public DatabaseStorage getDatabaseStorage() { return databaseStorage; }
 
     // Setters:
     public void setCurrentPhoto(Photo photo) {

@@ -6,9 +6,12 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,6 +22,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,9 +36,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
     Button refresh;
     Switch dejavumode;
+    Button importPhotos;
+    Button takePhoto;
+    Button friends;
+    Button settings;
 
     FirebaseDatabase database;
     DatabaseReference myRef;
@@ -81,19 +91,52 @@ public class MainActivity extends AppCompatActivity {
         /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
         dejavumode = (Switch) findViewById(R.id.dejavumode);
-        dejavumode.setChecked(true);  // deja vu mode is on by default
+        importPhotos = (Button) findViewById(R.id.importphotos);
+        takePhoto = (Button) findViewById(R.id.takephoto);
+        friends = (Button) findViewById(R.id.friends);
+        settings = (Button) findViewById(R.id.settings);
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick (View view) {
                 getCameraImages(getApplicationContext());
+            }
+        });
+
+        dejavumode.setChecked(true);  // deja vu mode is on by default
+
+        importPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                // TODO import photos activity
+            }
+        });
+
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                // TODO camera activity
+            }
+        });
+
+        friends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                // TODO start friends activity
+            }
+        });
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                // TODO settings activity
             }
         });
     }
 
     /* getCameraImages - gets the path of every photo taken by the phone's camera and stores them
      *   as strings. Also writes corresponding data about the photos to the sharedPreferences file. */
-    @SuppressWarnings({"SecurityException", "MissingPermission"})
+    //@SuppressWarnings({"SecurityException", "MissingPermission"})
     public List<String> getCameraImages(Context context) {
 
 
@@ -128,6 +171,11 @@ public class MainActivity extends AppCompatActivity {
 
         int totalScore = 0; // keeps track of cumulative probability scores of photos
 
+        // (TODO) create new album (doesn't work yet)
+        final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+                (Environment.DIRECTORY_DOWNLOADS), "DejaPhoto");
+        imageRoot.mkdirs();
+
         // Give each photo a probability score 1-100, default is 10
         for (int i = 0; i < pathNames.size(); i++) {
             String key = Integer.toString(i);
@@ -154,6 +202,33 @@ public class MainActivity extends AppCompatActivity {
                 score = 1;
             editor.putInt(key + "score", score);
             totalScore += score;
+
+            /*// Begin copy-and-pasted code
+            String filename = pathNames.get(i);
+            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+            OutputStream outStream = null;
+
+            File file = new File(filename + ".png");
+            if (file.exists()) {
+                file.delete();
+                file = new File(extStorageDirectory, filename + ".png");
+                Log.e("file exist", "" + file + ",Bitmap= " + filename);
+            }
+            try {
+                // make a new bitmap from your file
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getName());
+
+                outStream = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                outStream.flush();
+                outStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.e("file", "" + file);
+            // End copy-and-pasted code*/
+
+
         }
 
         // don't mess with index, unless it's outside our new array of path names
@@ -189,13 +264,18 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("dejavumode", false);
             editor.commit();
             Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
-            getCameraImages(getApplicationContext());
         }
+        getCameraImages(getApplicationContext());
+
+
+
+
+        // TODO save dejaphoto object to local storage
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
-        myRef.child("USERID").setValue(dejaPhoto.getDatabaseStorage());
+        myRef.child("USERID").setValue(new DatabaseStorage());
 
     }
 
