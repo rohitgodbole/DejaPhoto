@@ -2,6 +2,7 @@ package com.example.cs110sau.dejaphoto;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -36,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -79,6 +81,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dejaPhoto = new DejaPhoto(getApplicationContext());
+
+        // TODO (TEST) write to internal storage
+        /*String FILENAME = "hello_file";
+        String string = "DejaPhoto Test String";
+        try {
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write(dejaPhoto.toByteArray());
+            fos.close();
+        }
+        catch (IOException e) {
+            Toast.makeText(this, "Write failed", Toast.LENGTH_SHORT).show();
+        }*/
+        String FILENAME = "hello_file";
+        String string = "DejaPhoto Test String";
+        try {
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write(string.getBytes());
+            fos.close();
+        }
+        catch (IOException e) {
+            Toast.makeText(this, "Write failed", Toast.LENGTH_SHORT).show();
+        }
 
         while (!checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             checkPermissionREAD_EXTERNAL_STORAGE(this);
@@ -175,6 +199,8 @@ public class MainActivity extends AppCompatActivity {
         final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                 (Environment.DIRECTORY_DOWNLOADS), "DejaPhoto");
         imageRoot.mkdirs();
+        Toast.makeText(context, "making dir: " + imageRoot.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        imageRoot.mkdirs();
 
         // Give each photo a probability score 1-100, default is 10
         for (int i = 0; i < pathNames.size(); i++) {
@@ -203,6 +229,19 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt(key + "score", score);
             totalScore += score;
 
+            
+            FileOutputStream out;
+            File file = new File (imageRoot, pathNames.get(i) + ".jpg");
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(pathNames.get(i));
+                out = new FileOutputStream(file);
+                bitmap.compress (Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+            }
+            catch (Exception e) {
+                Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
+            }
             /*// Begin copy-and-pasted code
             String filename = pathNames.get(i);
             String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
@@ -268,9 +307,37 @@ public class MainActivity extends AppCompatActivity {
         getCameraImages(getApplicationContext());
 
 
+        // TODO save dejaphoto object to local storage (TEST)
+        // TODO (TEST) write to internal storage
+        /*String FILENAME = "hello_file";
+        dejaPhoto.setSize(-1);
+        byte [] str = new byte[1000000]; // TODO magic numbers
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            fis.read(str);
+            dejaPhoto = dejaPhoto.fromByteArray(str);
+            Toast.makeText(this, dejaPhoto.getSize(), Toast.LENGTH_SHORT).show();
+            fis.close();
+        }
+        catch (IOException e) {
+            Toast.makeText(this, "Read failed", Toast.LENGTH_SHORT).show();
+        }
+        catch (ClassNotFoundException e) {
+            Toast.makeText(this, "ClassNotFoundException", Toast.LENGTH_SHORT).show();
+        }*/
+        String FILENAME = "hello_file";
+        byte [] str = new byte[64];
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            fis.read(str);
+            String s = new String (str);
+            Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+            fis.close();
+        }
+        catch (IOException e) {
+            Toast.makeText(this, "Read failed", Toast.LENGTH_SHORT).show();
+        }
 
-
-        // TODO save dejaphoto object to local storage
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
         database = FirebaseDatabase.getInstance();
