@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,12 +22,14 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -58,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1470;
     static final long MILLISECONDS_IN_HOUR = 3600000;
     static final long HOURS_IN_MONTH = 730;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+
 
     DejaPhoto dejaPhoto;
 
@@ -137,10 +143,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
+
+            //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
                 // TODO camera activity
+
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if(takePictureIntent.resolveActivity(getPackageManager()) != null){
+                    startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
+                }
             }
+
+
+
         });
 
         friends.setOnClickListener(new View.OnClickListener() {
@@ -157,6 +173,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    //gets called after a pictre was taken and gives us a bitmap of the picture
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //saveImage(imageBitmap,"testing");
+            //TODO don't know how to save the bitmap/ what to do with it yet
+        }
+
+
+    }
+    //attempt to save bitmap to gallery
+//    private void saveImage(Bitmap thepic, String image_name){
+//        String root = Environment.getExternalStorageDirectory().toString();
+//        File myDir = new File(root);
+//        myDir.mkdirs();
+//        String fname = "Image-" + image_name + ".jpg";
+//        File file = new File(myDir, fname);
+//        if(file.exists()) file.delete();
+//        try{
+//            FileOutputStream out = new FileOutputStream(file);
+//            thepic.compress(Bitmap.CompressFormat.JPEG,90,out);
+//            out.flush();
+//            out.close();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
     /* getCameraImages - gets the path of every photo taken by the phone's camera and stores them
      *   as strings. Also writes corresponding data about the photos to the sharedPreferences file. */
