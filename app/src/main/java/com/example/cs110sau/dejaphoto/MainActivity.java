@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -34,11 +35,17 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -105,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
             fos.write(string.getBytes());
             fos.close();
+            Toast.makeText(this, "Hello World", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e) {
             Toast.makeText(this, "Write failed", Toast.LENGTH_SHORT).show();
@@ -286,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 out.close();
             }
             catch (Exception e) {
-                Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
             }
             /*// Begin copy-and-pasted code
             String filename = pathNames.get(i);
@@ -350,7 +358,6 @@ public class MainActivity extends AppCompatActivity {
             editor.commit();
             Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
         }
-        getCameraImages(getApplicationContext());
 
 
         // TODO save dejaphoto object to local storage (TEST)
@@ -371,6 +378,7 @@ public class MainActivity extends AppCompatActivity {
         catch (ClassNotFoundException e) {
             Toast.makeText(this, "ClassNotFoundException", Toast.LENGTH_SHORT).show();
         }*/
+
         String FILENAME = "hello_file";
         byte [] str = new byte[64];
         try {
@@ -384,11 +392,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Read failed", Toast.LENGTH_SHORT).show();
         }
 
+        //getCameraImages(getApplicationContext());
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
-        myRef.child("USERID").setValue(new DatabaseStorage());
+        //database = FirebaseDatabase.getInstance();
+        //myRef = database.getReference();
+        //myRef.child("USERID").setValue(new DatabaseStorage());
 
     }
 

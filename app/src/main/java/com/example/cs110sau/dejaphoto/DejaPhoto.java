@@ -28,6 +28,7 @@ public class DejaPhoto implements Serializable {
         this.dejaVuMode = false;
         this.context = context;
         this.size = 120; // TODO
+        this.userid = "";
     }
 
     // Fields
@@ -36,6 +37,7 @@ public class DejaPhoto implements Serializable {
     boolean dejaVuMode;
     Context context;
     int size;
+    String userid;
     // TODO variable for automatic refresh rate?
 
     // Methods:
