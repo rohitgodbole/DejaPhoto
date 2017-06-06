@@ -30,9 +30,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,6 +46,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -80,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
     Button takePhoto;
     Button friends;
     Button settings;
+    Button autoRef;
+    EditText time;
+    TextView finalResult;
 
     FirebaseDatabase database;
     DatabaseReference myRef;
@@ -133,6 +140,18 @@ public class MainActivity extends AppCompatActivity {
         takePhoto = (Button) findViewById(R.id.takephoto);
         friends = (Button) findViewById(R.id.friends);
         settings = (Button) findViewById(R.id.settings);
+        autoRef = (Button) findViewById(R.id.auto_ref);
+        time = (EditText) findViewById(R.id.edittext);
+        finalResult = (TextView) findViewById(R.id.finalR);
+
+        autoRef.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                AsyncTaskRunner runner = new AsyncTaskRunner();
+                String sleepTime = time.getText().toString();
+                runner.execute(sleepTime);
+            }
+        });
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -479,38 +498,44 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-        private String resp;
+    class AsyncTaskRunner extends AsyncTask<String, String, String> {
         ProgressDialog progressDialog;
+        private String ret;
+
+        @Override
+        protected String doInBackground(String...params) {
+            publishProgress("Sleeping...");
+            try{
+                int time = Integer.parseInt(params[0])*1000;
+
+                Thread.sleep(time);
+                ret = "Slept for " + params[0] + " seconds";
+            }catch (Exception e){
+                e.printStackTrace();
+                ret = e.getMessage();
+            }
+            return ret;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            progressDialog.dismiss();
+            finalResult.setText(result);
+        }
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
+            time.findViewById(R.id.edittext);
+            progressDialog = ProgressDialog.show(MainActivity.this,"ProgressDialog","wait for "+
+            time.getText().toString()+" seconds");
+
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onProgressUpdate(String...text) {
+            finalResult.setText(text[0]);
         }
 
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            publishProgress("Sleeping");
-            try {
-                int time = Integer.parseInt(params[0]) * 1000;
-
-                Thread.sleep(time);
-                resp = "slept for " + params[0] + "seconds";
-            } catch (Exception e) {
-                e.printStackTrace();
-                resp = e.getMessage();
-            }
-            return resp;
-        }
     }
 }
+

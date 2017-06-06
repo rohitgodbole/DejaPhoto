@@ -46,6 +46,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible" />
+        <TextView
+            android:id="@+id/finalR"
+            android:layout_width="match_parent"
+            android:layout_height="24sp" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -82,6 +86,17 @@
             android:layout_height="wrap_content"
             android:text="Settings"
             android:id="@+id/settings"/>
+
+        <Button
+            android:id="@+id/auto_ref"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RunAutoRefresh" />
+        <EditText
+            android:id="@+id/edittext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="enter_time"/>
 
     </LinearLayout>
 
