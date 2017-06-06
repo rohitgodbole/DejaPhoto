@@ -505,15 +505,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String...params) {
             publishProgress("Sleeping...");
-            try{
-                int time = Integer.parseInt(params[0])*1000;
+//            try{
+//                int time = Integer.parseInt(params[0])*1000;
+//
+//                Thread.sleep(time);
+//                ret = "Slept for " + params[0] + " seconds";
+//            }catch (Exception e){
+//                e.printStackTrace();
+//                ret = e.getMessage();
+//            }
 
-                Thread.sleep(time);
-                ret = "Slept for " + params[0] + " seconds";
-            }catch (Exception e){
-                e.printStackTrace();
-                ret = e.getMessage();
-            }
+
+            long starttime = 0;
+            long endtime = 5000;
+            Timer timer = new Timer();
+            timer.schedule(new callNext(), starttime, endtime);
+
             return ret;
         }
 
@@ -536,6 +543,16 @@ public class MainActivity extends AppCompatActivity {
             finalResult.setText(text[0]);
         }
 
+    }
+
+    class callNext extends TimerTask {
+
+        @Override
+        public void run(){
+            Intent next = new Intent(MainActivity.this, NextPhotoActivity.class);
+            startActivity(next);
+
+        }
     }
 }
 
