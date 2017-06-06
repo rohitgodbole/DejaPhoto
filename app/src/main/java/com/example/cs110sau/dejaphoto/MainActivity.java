@@ -28,6 +28,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,7 +67,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+import static com.example.cs110sau.dejaphoto.R.id.parent;
+
+public class MainActivity extends AppCompatActivity  {
 
     // unique ints to act as request codes
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 258;
@@ -86,13 +90,14 @@ public class MainActivity extends AppCompatActivity {
     Button settings;
     Button autoRef;
     EditText time;
-    TextView finalResult;
+    //TextView finalResult;
 
     FirebaseDatabase database;
     DatabaseReference myRef;
 
     Spinner spinner;
     ArrayAdapter adapter;
+    long changeRate;
 
     /* Runs when activity is started */
     @Override
@@ -142,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
         settings = (Button) findViewById(R.id.settings);
         autoRef = (Button) findViewById(R.id.auto_ref);
         time = (EditText) findViewById(R.id.edittext);
-        finalResult = (TextView) findViewById(R.id.finalR);
 
         autoRef.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +163,28 @@ public class MainActivity extends AppCompatActivity {
                 getCameraImages(getApplicationContext());
             }
         });
+
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        adapter = ArrayAdapter.createFromResource(this, R.array.choose_rate, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String itemselected = parent.getItemAtPosition(position).toString();
+                changeRate = Long.valueOf(itemselected).longValue();
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Toast.makeText(MainActivity.this, "Nothing selected " , Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         dejavumode.setChecked(true);  // deja vu mode is on by default
 
@@ -517,9 +543,9 @@ public class MainActivity extends AppCompatActivity {
 
 
             long starttime = 0;
-            long endtime = 5000;
+            long cycletime = changeRate;
             Timer timer = new Timer();
-            timer.schedule(new callNext(), starttime, endtime);
+            timer.schedule(new callNext(), starttime, cycletime);
 
             return ret;
         }
@@ -527,7 +553,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             progressDialog.dismiss();
-            finalResult.setText(result);
+
         }
 
         @Override
@@ -540,11 +566,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(String...text) {
-            finalResult.setText(text[0]);
+
         }
 
     }
 
+    //this class is called by the timer to do some sort of function
+    //for this instance we are using it to call the nextphotoactivity intent.
     class callNext extends TimerTask {
 
         @Override
