@@ -174,7 +174,13 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String itemselected = parent.getItemAtPosition(position).toString();
-                changeRate = Long.valueOf(itemselected).longValue();
+                changeRate = Long.valueOf(itemselected).longValue() * 1000;
+
+                SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putLong("refresh rate", changeRate);
+                editor.commit();
 
 
             }
@@ -542,8 +548,13 @@ public class MainActivity extends AppCompatActivity  {
 //            }
 
 
-            long starttime = 0;
-            long cycletime = changeRate;
+            long starttime = 5000;
+            long cycletime;
+            SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+            cycletime = sharedPreferences.getLong("refresh rate",0);
+//            Toast.makeText(MainActivity.this, "cycle time : " + cycletime, Toast.LENGTH_SHORT).show();
+
+
             Timer timer = new Timer();
             timer.schedule(new callNext(), starttime, cycletime);
 
