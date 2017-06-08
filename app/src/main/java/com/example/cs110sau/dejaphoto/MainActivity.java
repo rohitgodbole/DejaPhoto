@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity  {
     static final long MILLISECONDS_IN_HOUR = 3600000;
     static final long HOURS_IN_MONTH = 730;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_TAKE_PHOTO = 145;
 
 
     DejaPhoto dejaPhoto;
@@ -106,29 +106,6 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
 
         dejaPhoto = new DejaPhoto(getApplicationContext());
-
-        // TODO (TEST) write to internal storage
-        /*String FILENAME = "hello_file";
-        String string = "DejaPhoto Test String";
-        try {
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(dejaPhoto.toByteArray());
-            fos.close();
-        }
-        catch (IOException e) {
-            Toast.makeText(this, "Write failed", Toast.LENGTH_SHORT).show();
-        }*/
-        String FILENAME = "hello_file";
-        String string = "DejaPhoto Test String";
-        try {
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(string.getBytes());
-            fos.close();
-            Toast.makeText(this, "Hello World", Toast.LENGTH_SHORT).show();
-        }
-        catch (IOException e) {
-            Toast.makeText(this, "Write failed", Toast.LENGTH_SHORT).show();
-        }
 
         while (!checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             checkPermissionREAD_EXTERNAL_STORAGE(this);
@@ -206,8 +183,6 @@ public class MainActivity extends AppCompatActivity  {
             //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
-                // TODO camera activity
-
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(takePictureIntent.resolveActivity(getPackageManager()) != null){
                     startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
@@ -347,32 +322,6 @@ public class MainActivity extends AppCompatActivity  {
             catch (Exception e) {
                 //Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
             }
-            /*// Begin copy-and-pasted code
-            String filename = pathNames.get(i);
-            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            OutputStream outStream = null;
-
-            File file = new File(filename + ".png");
-            if (file.exists()) {
-                file.delete();
-                file = new File(extStorageDirectory, filename + ".png");
-                Log.e("file exist", "" + file + ",Bitmap= " + filename);
-            }
-            try {
-                // make a new bitmap from your file
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getName());
-
-                outStream = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                outStream.flush();
-                outStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.e("file", "" + file);
-            // End copy-and-pasted code*/
-
-
         }
 
         // don't mess with index, unless it's outside our new array of path names
@@ -408,39 +357,6 @@ public class MainActivity extends AppCompatActivity  {
             editor.putBoolean("dejavumode", false);
             editor.commit();
             Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
-        }
-
-
-        // TODO save dejaphoto object to local storage (TEST)
-        // TODO (TEST) write to internal storage
-        /*String FILENAME = "hello_file";
-        dejaPhoto.setSize(-1);
-        byte [] str = new byte[1000000]; // TODO magic numbers
-        try {
-            FileInputStream fis = openFileInput(FILENAME);
-            fis.read(str);
-            dejaPhoto = dejaPhoto.fromByteArray(str);
-            Toast.makeText(this, dejaPhoto.getSize(), Toast.LENGTH_SHORT).show();
-            fis.close();
-        }
-        catch (IOException e) {
-            Toast.makeText(this, "Read failed", Toast.LENGTH_SHORT).show();
-        }
-        catch (ClassNotFoundException e) {
-            Toast.makeText(this, "ClassNotFoundException", Toast.LENGTH_SHORT).show();
-        }*/
-
-        String FILENAME = "hello_file";
-        byte [] str = new byte[64];
-        try {
-            FileInputStream fis = openFileInput(FILENAME);
-            fis.read(str);
-            String s = new String (str);
-            Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-            fis.close();
-        }
-        catch (IOException e) {
-            Toast.makeText(this, "Read failed", Toast.LENGTH_SHORT).show();
         }
 
         //getCameraImages(getApplicationContext());
@@ -551,8 +467,7 @@ public class MainActivity extends AppCompatActivity  {
             long starttime = 5000;
             long cycletime;
             SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-            cycletime = sharedPreferences.getLong("refresh rate",0);
-//            Toast.makeText(MainActivity.this, "cycle time : " + cycletime, Toast.LENGTH_SHORT).show();
+            cycletime = sharedPreferences.getLong("refresh rate",5000);
 
 
             Timer timer = new Timer();
@@ -577,7 +492,6 @@ public class MainActivity extends AppCompatActivity  {
 
         @Override
         protected void onProgressUpdate(String...text) {
-
         }
 
     }

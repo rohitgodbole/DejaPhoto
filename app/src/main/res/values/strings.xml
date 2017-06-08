@@ -6,9 +6,9 @@
     <string name="title_activity_karma">KarmaActivity</string>
     <string name="title_activity_release">ReleaseActivity</string>
     <string-array name="choose_rate">
-        <item>10</item>
-        <item>20</item>
-        <item>30</item>
-        <item>60</item>
+        <item>2</item>
+        <item>8</item>
+        <item>32</item>
+        <item>128</item>
     </string-array>
 </resources>
