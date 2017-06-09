@@ -325,6 +325,7 @@ public class MainActivity extends AppCompatActivity  {
                         String copyFileName = "Copy_" + timeStamp + "_";
                         try {
                             File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+                            Toast.makeText(this, "copyf in Import: " + copyF.getAbsolutePath(),Toast.LENGTH_LONG).show();
                             CurrentPhotoPath = copyF.getAbsolutePath();
                             imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                             FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
@@ -385,21 +386,19 @@ public class MainActivity extends AppCompatActivity  {
             int i = 0;
             do {
                 final String data = cursor.getString(dataColumn);
+                //puting the picture in the DejaPhotoCopy
                 pathNames.add(data);
                 try {
-                    Toast.makeText(this, "it goes in", Toast.LENGTH_SHORT).show();
                     File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
-                    Toast.makeText(this, copyF.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,copyF.getAbsolutePath().substring(0,42),Toast.LENGTH_LONG).show();
 
-                    CurrentPhotoPath = copyF.getAbsolutePath();
-                    uri = Uri.parse(pathNames.get(i));
-                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+                    CurrentPhotoPath = copyF.getAbsolutePath().substring(0,57) + pathNames.get(i).substring(36);
+                    uri = Uri.parse(CurrentPhotoPath);
 
                     imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
-                    if( imageBitmap == null){
-                        Toast.makeText(this, "it's null", Toast.LENGTH_SHORT).show();
-                    }
-                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
+
+                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath().substring(0,42));
+                    Toast.makeText(this,copyF.getAbsolutePath().substring(0,57),Toast.LENGTH_LONG).show();
                     imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
 
 //                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
