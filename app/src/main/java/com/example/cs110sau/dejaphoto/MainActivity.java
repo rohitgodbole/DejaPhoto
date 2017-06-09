@@ -543,6 +543,9 @@ public class MainActivity extends AppCompatActivity  {
 
         @Override
         protected void onPreExecute() {
+            spinner.findViewById(R.id.spinner);
+            progressDialog = ProgressDialog.show(MainActivity.this,"ProgressDialog","wait for "+
+                    spinner.getSelectedView().toString()+" seconds");
         }
 
         @Override
