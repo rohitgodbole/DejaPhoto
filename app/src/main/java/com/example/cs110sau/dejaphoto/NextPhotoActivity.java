@@ -43,7 +43,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // If deja vu mode is on, adjust scores of each photo
-        if (sharedPreferences.getBoolean("dejavumode", false) == true) {
+        if (sharedPreferences.getBoolean("dejavumode", true) == true) {
             int size = sharedPreferences.getInt("size", 0); // size of picture array
             for (int i = 0; i < size; i++) {
                 String pathName = sharedPreferences.getString(Integer.toString(i), null);

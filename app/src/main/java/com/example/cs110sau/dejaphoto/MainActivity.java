@@ -103,10 +103,6 @@ public class MainActivity extends AppCompatActivity  {
     Button takePhoto;
     Button friends;
     Button autoRef;
-    //TextView finalResult;
-
-    FirebaseDatabase database;
-    DatabaseReference myRef;
 
     Spinner spinner;
     ArrayAdapter adapter;
@@ -126,6 +122,16 @@ public class MainActivity extends AppCompatActivity  {
 
         while (!checkPermissionACCESS_FINE_LOCATION(this)) {
             checkPermissionACCESS_FINE_LOCATION(this);
+        }
+        
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        String userid = sharedPreferences.getString("userid", null);
+        
+        if (userid != null) {
+            updateID(userid);
+        }
+        else {
+            Toast.makeText(this, "User ID not entered - please choose one", Toast.LENGTH_SHORT).show();
         }
 
         /* onClick listeners for elements */
@@ -152,7 +158,6 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
-
         spinner = (Spinner) findViewById(R.id.spinner);
         adapter = ArrayAdapter.createFromResource(this, R.array.choose_rate, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -175,7 +180,7 @@ public class MainActivity extends AppCompatActivity  {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(MainActivity.this, "Nothing selected " , Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Nothing selected" , Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -185,7 +190,6 @@ public class MainActivity extends AppCompatActivity  {
         importPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
-                // TODO import photos activity
                 Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 photoPickerIntent.setType("image/*");
                 photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -249,7 +253,6 @@ public class MainActivity extends AppCompatActivity  {
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 MainActivity.this.sendBroadcast(mediaScanIntent);
-
             } catch ( IOException e){
 
             }
@@ -278,11 +281,8 @@ public class MainActivity extends AppCompatActivity  {
 //
 //                }
 
-
             }
-
         }
-
     }
 
 
@@ -420,9 +420,15 @@ public class MainActivity extends AppCompatActivity  {
         //getCameraImages(getApplicationContext());
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
-        //database = FirebaseDatabase.getInstance();
-        //myRef = database.getReference();
-        //myRef.child("USERID").setValue(new DatabaseStorage());
+        String userid = sharedPreferences.getString("userid", null);
+        if (userid != null) {
+            // TODO write to firebase
+            //DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+            //databaseRef.setValue("TEST");
+        }
+        else {
+            Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -542,11 +548,6 @@ public class MainActivity extends AppCompatActivity  {
 
         @Override
         protected void onPreExecute() {
-            // TODO progress dialog?
-            //time.findViewById(R.id.edittext);
-            //progressDialog = ProgressDialog.show(MainActivity.this,"ProgressDialog","wait for "+
-            //time.getText().toString()+" seconds");
-
         }
 
         @Override
@@ -558,18 +559,27 @@ public class MainActivity extends AppCompatActivity  {
     //this class is called by the timer to do some sort of function
     //for this instance we are using it to call the nextphotoactivity intent.
     class callNext extends TimerTask {
-
         @Override
         public void run(){
-            Intent next = new Intent(MainActivity.this, NextPhotoActivity.class);
-            startActivity(next);
-
+            Intent nextPhoto = new Intent(MainActivity.this, NextPhotoActivity.class);
+            startActivity(nextPhoto);
         }
     }
 
+    // user can enter their own user ID
     public void submituserid (View view) {
-        String userid = "TEST";
-        // TODO make user ids work
+        String userid = ((EditText) findViewById(R.id.userid)).getEditableText().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userid", userid);
+        editor.commit();
+        Toast.makeText(this, "Submitted ID", Toast.LENGTH_SHORT).show();
+        updateID(userid);
+    }
+
+    public void updateID(String userid) {
+        TextView title = (TextView) findViewById(R.id.title);
+        title.setText("DejaPhoto: " + userid);
     }
 }
 

@@ -8,12 +8,14 @@ import java.util.ArrayList;
 
 
 public class DatabaseStorage {
-    public ArrayList<Bitmap> photos;
+    public ArrayList<String> paths;
     public ArrayList<Integer> karma;
     public DatabaseStorage() {
-        photos = new ArrayList<>();
         karma = new ArrayList<>();
+        paths = new ArrayList<>();
         karma.add(100);
+        paths.add("testpath1");
         karma.add(99);
+        paths.add("testpath2");
     }
 }
