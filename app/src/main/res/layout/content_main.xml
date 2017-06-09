@@ -35,11 +35,11 @@
             android:textColor="#303080"
             android:id="@+id/title"/>
 
-        <Switch
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dejavumode"
-            android:text="Deja Vu Mode: "/>
+            android:text="Settings"
+            android:id="@+id/settings"/>
 
         <TextView
             android:id="@+id/textView"

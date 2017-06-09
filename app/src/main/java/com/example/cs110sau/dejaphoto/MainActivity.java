@@ -98,11 +98,11 @@ public class MainActivity extends AppCompatActivity  {
     DejaPhoto dejaPhoto;
 
     Button refresh;
-    Switch dejavumode;
     Button importPhotos;
     Button takePhoto;
     Button friends;
     Button autoRef;
+    Button settings;
 
     Spinner spinner;
     ArrayAdapter adapter;
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity  {
 
         /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
-        dejavumode = (Switch) findViewById(R.id.dejavumode);
+        settings = (Button) findViewById(R.id.settings);
         importPhotos = (Button) findViewById(R.id.importphotos);
         takePhoto = (Button) findViewById(R.id.takephoto);
         friends = (Button) findViewById(R.id.friends);
@@ -184,9 +184,6 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
-
-        dejavumode.setChecked(true);  // deja vu mode is on by default
-
         importPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
@@ -221,6 +218,14 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick (View view) {
                 Intent friendsIntent = new Intent (getApplicationContext(), FriendsActivity.class);
                 startActivity(friendsIntent);
+            }
+        });
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                Intent settingsIntent = new Intent (getApplicationContext(), SettingsActivity.class);
+                startActivity(settingsIntent);
             }
         });
 
@@ -406,16 +411,6 @@ public class MainActivity extends AppCompatActivity  {
     protected void onStop() {
         super.onStop();
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (dejavumode.isChecked()) {
-            editor.putBoolean("dejavumode", true);
-            editor.commit();
-            Toast.makeText(this, "Deja Vu Mode On", Toast.LENGTH_SHORT).show();
-        } else {
-            editor.putBoolean("dejavumode", false);
-            editor.commit();
-            Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
-        }
 
         //getCameraImages(getApplicationContext());
 
