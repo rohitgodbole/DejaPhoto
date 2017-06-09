@@ -205,7 +205,11 @@ public class MainActivity extends AppCompatActivity  {
             //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
+                //use line below to take multiple pics before returning from intent, but the pics go to camera role and not
+                //custom album
+//                takePictureIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
                 takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
                 startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
 
             }

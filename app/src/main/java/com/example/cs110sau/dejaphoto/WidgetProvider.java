@@ -24,16 +24,19 @@ public class WidgetProvider extends AppWidgetProvider {
         Intent prevIntent = new Intent(context, PrevPhotoActivity.class);
         Intent karmaIntent = new Intent(context, KarmaActivity.class);
         Intent releaseIntent = new Intent(context, ReleaseActivity.class);
+        Intent userLocIntent = new Intent( context, usrDefnLocActivity.class);
 
         PendingIntent nextPendingIntent = PendingIntent.getActivity(context, 0, nextIntent, 0);
         PendingIntent prevPendingIntent = PendingIntent.getActivity(context, 0, prevIntent, 0);
         PendingIntent karmaPendingIntent = PendingIntent.getActivity(context, 0, karmaIntent, 0);
         PendingIntent releasePendingIntent = PendingIntent.getActivity(context, 0, releaseIntent, 0);
+        PendingIntent LocationPendingIntent = PendingIntent.getActivity(context, 1, userLocIntent, 0);
 
         remoteViews.setOnClickPendingIntent(R.id.right, nextPendingIntent);
         remoteViews.setOnClickPendingIntent(R.id.left, prevPendingIntent);
         remoteViews.setOnClickPendingIntent(R.id.karma, karmaPendingIntent);
         remoteViews.setOnClickPendingIntent(R.id.release, releasePendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.userLocation, LocationPendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
     }

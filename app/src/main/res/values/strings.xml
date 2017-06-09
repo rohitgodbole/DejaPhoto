@@ -5,6 +5,8 @@
     <string name="title_activity_prev_photo">PrevPhotoActivity</string>
     <string name="title_activity_karma">KarmaActivity</string>
     <string name="title_activity_release">ReleaseActivity</string>
+    <string name="title_activity_userLocation">UserLocationActivity</string>
+
     <string-array name="choose_rate">
         <item>2</item>
         <item>8</item>
