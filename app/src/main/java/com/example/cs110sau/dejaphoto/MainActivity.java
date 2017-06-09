@@ -221,7 +221,8 @@ public class MainActivity extends AppCompatActivity  {
         friends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
-                // TODO start friends activity
+                Intent friendsIntent = new Intent (getApplicationContext(), FriendsActivity.class);
+                startActivity(friendsIntent);
             }
         });
 

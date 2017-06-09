@@ -17,6 +17,8 @@
 
     <grant-uri-permission android:path="content://media/external/images/media" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -64,8 +66,11 @@
             android:name=".ReleaseActivity"
             android:label="@string/title_activity_release"
             android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FriendsActivity"
+            android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-
     </application>
 
 </manifest>
