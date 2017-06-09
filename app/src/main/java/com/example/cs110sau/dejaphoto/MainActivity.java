@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity  {
     static final int SELECT_PHOTO = 2;
     String imageEncoded;
     List<String> imagesEncodedList;
+    Intent photoPickerIntent;
 
 
     DejaPhoto dejaPhoto;
@@ -192,7 +194,7 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick (View view) {
                 // TODO import photos activity
-                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 photoPickerIntent.setType("image/*");
                 photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
@@ -205,11 +207,7 @@ public class MainActivity extends AppCompatActivity  {
             //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
-                //use line below to take multiple pics before returning from intent, but the pics go to camera role and not
-                //custom album
-//                takePictureIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
                 takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
                 startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
 
             }
@@ -240,9 +238,11 @@ public class MainActivity extends AppCompatActivity  {
     //to a file and creates a folder in the gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+
         //if we just took a picture from inside the app
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "Image_"+ timeStamp + "_";
+
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
 
 
@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity  {
             imageBitmap = (Bitmap) extras.get("data");
             File myDir = new File(root, "DejaPhoto");
             myDir.mkdirs();
+            String imageFileName = "Image_"+ timeStamp + "_";
 
             try {
                 File imageF = File.createTempFile(imageFileName, ".jpg", myDir);
@@ -271,29 +272,64 @@ public class MainActivity extends AppCompatActivity  {
         //if we are trying to import photos
         //TODO right now i believe i am getting the uri but dont know what to do with them yet
         if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK){
-            String[] filePathCol = {MediaStore.Images.Media.DATA};
-            imagesEncodedList = new ArrayList<String>();
-            File myDir = new File(root, "DejaPhotoCopied");
-            myDir.mkdirs();
-            if(data.getData() != null){
-                Uri imageUri = data.getData();
-
-                Cursor cursor = getContentResolver().query(imageUri,filePathCol,null, null, null);
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            ClipData clipData = data.getClipData();
+            ArrayList<Uri> theArryUri = new ArrayList<Uri>();
+            for (int i = 0; i < clipData.getItemCount(); i++)
+            {
+                ClipData.Item item = clipData.getItemAt(i);
+                Uri uri = item.getUri();
+                theArryUri.add(uri);
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                // Move to first row
                 cursor.moveToFirst();
 
-                int colIdx = cursor.getColumnIndex(filePathCol[0]);
-                imageEncoded = cursor.getString(colIdx);
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                imageEncoded  = cursor.getString(columnIndex);
+                imagesEncodedList.add(imageEncoded);
                 cursor.close();
-                //was going to try to put into a file, but don't know how
-//                try {
-//                    File dejaCopied = File.createTempFile("Copied_" + timeStamp + "_", ".jpg", myDir);
-//                    FileOutputStream
-//                } catch ( Exception e){
-//
-//                }
+                File myDir = new File(root, "DejaPhotoCopied");
+                myDir.mkdirs();
+                String copyFileName = "Copy_" + timeStamp + "_";
+                try{
+                    File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+                    CurrentPhotoPath = copyF.getAbsolutePath();
+                    FileOutputStream fout = new FileOutputStream(CurrentPhotoPath);
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(copyF));
+                    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                    File f = new File(CurrentPhotoPath);
+                    Uri contentUri = Uri.fromFile(f);
+                    mediaScanIntent.setData(contentUri);
+                    MainActivity.this.sendBroadcast(mediaScanIntent);
 
+                } catch( IOException e){
 
+                }
             }
+
+
+
+
+
+//            String[] filePathCol = {MediaStore.Images.Media.DATA};
+//
+
+
+//            imagesEncodedList = new ArrayList<String>();
+//            imagesEncodedList.add(filePathCol[0]);
+//
+//
+//
+//
+////            if(data.getData() != null){
+////
+//                Uri imageUri = data.getData();
+//
+//
+//
+//
 
         }
 
@@ -518,6 +554,8 @@ public class MainActivity extends AppCompatActivity  {
         alert.show();
     }
 
+    //this is called by the spinner after a selection has been made and it calls doInBackground and runs
+    //the intent for every cycletime
     class AsyncTaskRunner extends AsyncTask<String, String, String> {
         ProgressDialog progressDialog;
         private String ret;
@@ -525,16 +563,6 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         protected String doInBackground(String...params) {
             publishProgress("Sleeping...");
-//            try{
-//                int time = Integer.parseInt(params[0])*1000;
-//
-//                Thread.sleep(time);
-//                ret = "Slept for " + params[0] + " seconds";
-//            }catch (Exception e){
-//                e.printStackTrace();
-//                ret = e.getMessage();
-//            }
-
 
             long starttime = 5000;
             long cycletime;
