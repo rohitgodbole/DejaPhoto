@@ -52,6 +52,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+;
 
 import org.w3c.dom.Text;
 
@@ -61,6 +62,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
@@ -83,10 +85,16 @@ public class MainActivity extends AppCompatActivity  {
     static final long HOURS_IN_MONTH = 730;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 //    static final int REQUEST_TAKE_PHOTO = 145;
-static final int REQUEST_TAKE_PHOTO = 1;
+    //used to take a photo within the app and store the photo onto the gallery
+    static final int REQUEST_TAKE_PHOTO = 1;
     String CurrentPhotoPath;
     Intent takePictureIntent;
     Bitmap imageBitmap;
+
+    //must be different than image capture
+    static final int SELECT_PHOTO = 2;
+    String imageEncoded;
+    List<String> imagesEncodedList;
 
 
     DejaPhoto dejaPhoto;
@@ -184,6 +192,11 @@ static final int REQUEST_TAKE_PHOTO = 1;
             @Override
             public void onClick (View view) {
                 // TODO import photos activity
+                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                photoPickerIntent.setType("image/*");
+                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+
+                startActivityForResult(photoPickerIntent,SELECT_PHOTO);
             }
         });
 
@@ -223,14 +236,15 @@ static final int REQUEST_TAKE_PHOTO = 1;
     //to a file and creates a folder in the gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //if we just took a picture from inside the app
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "Image_"+ timeStamp + "_";
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-
-            }
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String imageFileName = "Image_"+ timeStamp + "_";
-            String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
             File myDir = new File(root, "DejaPhoto");
             myDir.mkdirs();
 
@@ -249,6 +263,36 @@ static final int REQUEST_TAKE_PHOTO = 1;
             } catch ( IOException e){
 
             }
+        }
+        //if we are trying to import photos
+        //TODO right now i believe i am getting the uri but dont know what to do with them yet
+        if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK){
+            String[] filePathCol = {MediaStore.Images.Media.DATA};
+            imagesEncodedList = new ArrayList<String>();
+            File myDir = new File(root, "DejaPhotoCopied");
+            myDir.mkdirs();
+            if(data.getData() != null){
+                Uri imageUri = data.getData();
+
+                Cursor cursor = getContentResolver().query(imageUri,filePathCol,null, null, null);
+                cursor.moveToFirst();
+
+                int colIdx = cursor.getColumnIndex(filePathCol[0]);
+                imageEncoded = cursor.getString(colIdx);
+                cursor.close();
+                //was going to try to put into a file, but don't know how
+//                try {
+//                    File dejaCopied = File.createTempFile("Copied_" + timeStamp + "_", ".jpg", myDir);
+//                    FileOutputStream
+//                } catch ( Exception e){
+//
+//                }
+
+
+            }
+
+        }
+
     }
 
 
