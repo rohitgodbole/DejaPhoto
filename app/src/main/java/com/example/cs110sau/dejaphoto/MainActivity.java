@@ -257,43 +257,106 @@ public class MainActivity extends AppCompatActivity  {
         }
         //if we are trying to import photos
         //TODO right now i believe i am getting the uri but dont know what to do with them yet
-        if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK){
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            ClipData clipData = data.getClipData();
-            ArrayList<Uri> theArryUri = new ArrayList<Uri>();
-            for (int i = 0; i < clipData.getItemCount(); i++)
-            {
-                ClipData.Item item = clipData.getItemAt(i);
-                Uri uri = item.getUri();
-                theArryUri.add(uri);
+        if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
+//            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//            ClipData clipData = data.getClipData();
+//            ArrayList<Uri> theArryUri = new ArrayList<Uri>();
+            File myDir = new File(root, "/DejaPhotoCopy");
+            myDir.mkdirs();
+            if( !myDir.exists()){
+                Toast.makeText(this,"What the Fuck", Toast.LENGTH_SHORT).show();
+            }
+//            for (int i = 0; i < clipData.getItemCount(); i++) {
+//                ClipData.Item item = clipData.getItemAt(i);
+//                Uri uri = item.getUri();
+//                theArryUri.add(uri);
+//                try{
+//                    imageBitmap = BitmapFactory.decodeFile(uri.toString());
+//
+
+//
+//                } catch (IOException e){
+//
+//                }
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            imagesEncodedList = new ArrayList<String>();
+            if (data.getData() != null) {
+
+                Uri mImageUri = data.getData();
+
                 // Get the cursor
-                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                Cursor cursor = getContentResolver().query(mImageUri,
+                        filePathColumn, null, null, null);
                 // Move to first row
                 cursor.moveToFirst();
 
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                imageEncoded  = cursor.getString(columnIndex);
-                imagesEncodedList.add(imageEncoded);
+                imageEncoded = cursor.getString(columnIndex);
                 cursor.close();
-                File myDir = new File(root, "DejaPhotoCopied");
-                myDir.mkdirs();
+
                 String copyFileName = "Copy_" + timeStamp + "_";
-                try{
+                try {
                     File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
                     CurrentPhotoPath = copyF.getAbsolutePath();
-                    FileOutputStream fout = new FileOutputStream(CurrentPhotoPath);
+                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
                     imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(copyF));
+
+                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri );
                     Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
                     File f = new File(CurrentPhotoPath);
                     Uri contentUri = Uri.fromFile(f);
                     mediaScanIntent.setData(contentUri);
                     MainActivity.this.sendBroadcast(mediaScanIntent);
-
-                } catch( IOException e){
+                } catch (IOException e)
+                {
 
                 }
+
+            } else {
+                if (data.getClipData() != null) {
+                    ClipData mClipData = data.getClipData();
+                    ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+                    for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                        ClipData.Item item = mClipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        mArrayUri.add(uri);
+                        // Get the cursor
+                        Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                        // Move to first row
+                        cursor.moveToFirst();
+
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        imageEncoded = cursor.getString(columnIndex);
+                        imagesEncodedList.add(imageEncoded);
+
+                        cursor.close();
+
+                        String copyFileName = "Copy_" + timeStamp + "_";
+                        try {
+                            File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+                            CurrentPhotoPath = copyF.getAbsolutePath();
+                            imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                            FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
+                            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+
+                            photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT,uri );
+                            Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                            File f = new File(CurrentPhotoPath);
+                            Uri contentUri = Uri.fromFile(f);
+                            mediaScanIntent.setData(contentUri);
+                            MainActivity.this.sendBroadcast(mediaScanIntent);
+                        } catch (IOException e)
+                        {
+
+                        }
+
+
+                    }
+                }
             }
+        }
 
 
 
@@ -319,7 +382,7 @@ public class MainActivity extends AppCompatActivity  {
 
         }
 
-    }
+//    }
 
 
 
