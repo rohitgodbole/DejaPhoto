@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.ProgressDialog;
+import android.app.WallpaperManager;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +16,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.media.Image;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -64,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -77,7 +82,11 @@ public class MainActivity extends AppCompatActivity  {
     static final long MILLISECONDS_IN_HOUR = 3600000;
     static final long HOURS_IN_MONTH = 730;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 145;
+//    static final int REQUEST_TAKE_PHOTO = 145;
+static final int REQUEST_TAKE_PHOTO = 1;
+    String CurrentPhotoPath;
+    Intent takePictureIntent;
+    Bitmap imageBitmap;
 
 
     DejaPhoto dejaPhoto;
@@ -183,10 +192,9 @@ public class MainActivity extends AppCompatActivity  {
             //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if(takePictureIntent.resolveActivity(getPackageManager()) != null){
-                    startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
-                }
+                takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
+
             }
 
 
@@ -206,37 +214,44 @@ public class MainActivity extends AppCompatActivity  {
                 // TODO settings activity
             }
         });
+
+
+
     }
 
-    //gets called after a pictre was taken and gives us a bitmap of the picture
+    //gets called after a pictre was taken and gives us a bitmap of the picture then we put the bitmap
+    //to a file and creates a folder in the gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //saveImage(imageBitmap,"testing");
-            //TODO don't know how to save the bitmap/ what to do with it yet
-        }
+            imageBitmap = (Bitmap) extras.get("data");
 
+            }
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "Image_"+ timeStamp + "_";
+            String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+            File myDir = new File(root, "DejaPhoto");
+            myDir.mkdirs();
 
+            try {
+                File imageF = File.createTempFile(imageFileName, ".jpg", myDir);
+                CurrentPhotoPath = imageF.getAbsolutePath();
+                FileOutputStream fout = new FileOutputStream(CurrentPhotoPath);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageF));
+                Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                File f = new File(CurrentPhotoPath);
+                Uri contentUri = Uri.fromFile(f);
+                mediaScanIntent.setData(contentUri);
+                MainActivity.this.sendBroadcast(mediaScanIntent);
+
+            } catch ( IOException e){
+
+            }
     }
-    //attempt to save bitmap to gallery
-//    private void saveImage(Bitmap thepic, String image_name){
-//        String root = Environment.getExternalStorageDirectory().toString();
-//        File myDir = new File(root);
-//        myDir.mkdirs();
-//        String fname = "Image-" + image_name + ".jpg";
-//        File file = new File(myDir, fname);
-//        if(file.exists()) file.delete();
-//        try{
-//            FileOutputStream out = new FileOutputStream(file);
-//            thepic.compress(Bitmap.CompressFormat.JPEG,90,out);
-//            out.flush();
-//            out.close();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
+
+
 
     /* getCameraImages - gets the path of every photo taken by the phone's camera and stores them
      *   as strings. Also writes corresponding data about the photos to the sharedPreferences file. */
@@ -276,11 +291,10 @@ public class MainActivity extends AppCompatActivity  {
         int totalScore = 0; // keeps track of cumulative probability scores of photos
 
         // (TODO) create new album (doesn't work yet)
-        final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
-                (Environment.DIRECTORY_DOWNLOADS), "DejaPhoto");
-        imageRoot.mkdirs();
-        Toast.makeText(context, "making dir: " + imageRoot.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-        imageRoot.mkdirs();
+//        final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+//                (Environment.DIRECTORY_DOWNLOADS), "DejaPhoto");
+//        imageRoot.mkdirs();
+//        Toast.makeText(context, "making dir: " + imageRoot.getAbsolutePath(), Toast.LENGTH_SHORT).show();
 
         // Give each photo a probability score 1-100, default is 10
         for (int i = 0; i < pathNames.size(); i++) {
@@ -309,19 +323,29 @@ public class MainActivity extends AppCompatActivity  {
             editor.putInt(key + "score", score);
             totalScore += score;
 
-            
-            FileOutputStream out;
-            File file = new File (imageRoot, pathNames.get(i) + ".jpg");
-            try {
-                Bitmap bitmap = BitmapFactory.decodeFile(pathNames.get(i));
-                out = new FileOutputStream(file);
-                bitmap.compress (Bitmap.CompressFormat.JPEG, 100, out);
-                out.flush();
-                out.close();
-            }
-            catch (Exception e) {
-                //Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
-            }
+
+//            OutputStream fOut = null;
+//            File file = new File (imageRoot, pathNames.get(i) + ".jpg");
+//            try {
+//                fOut = new FileOutputStream(file);
+//                Bitmap bitmap = BitmapFactory.decodeFile(pathNames.get(i));
+//                bitmap.compress (Bitmap.CompressFormat.JPEG, 100, fOut);
+//                fOut.flush();
+//                fOut.close();
+//
+//                ContentValues values = new ContentValues();
+//                values.put(MediaStore.Images.Media.TITLE, "testing");
+//                values.put(MediaStore.Images.Media.DESCRIPTION, "some picture");
+//                values.put(MediaStore.Images.ImageColumns.BUCKET_ID, file.toString().toLowerCase(Locale.US).hashCode());
+//                values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(Locale.US));
+//                values.put("_data", file.getAbsolutePath());
+//
+//                ContentResolver cr = getContentResolver();
+//                cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+////            }
+//            catch (Exception e) {
+//                //Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
+//            }
         }
 
         // don't mess with index, unless it's outside our new array of path names
