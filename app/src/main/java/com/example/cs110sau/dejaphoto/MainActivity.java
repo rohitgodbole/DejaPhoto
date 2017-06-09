@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -75,6 +76,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.example.cs110sau.dejaphoto.R.id.parent;
+import static com.example.cs110sau.dejaphoto.R.id.settings;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -93,16 +95,21 @@ public class MainActivity extends AppCompatActivity  {
     static final int SELECT_PHOTO = 2;
     String imageEncoded;
     List<String> imagesEncodedList;
+    Intent photoPickerIntent;
 
 
     DejaPhoto dejaPhoto;
 
     Button refresh;
+    Button settings;
     Button importPhotos;
     Button takePhoto;
     Button friends;
     Button autoRef;
-    Button settings;
+    //TextView finalResult;
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     Spinner spinner;
     ArrayAdapter adapter;
@@ -122,16 +129,6 @@ public class MainActivity extends AppCompatActivity  {
 
         while (!checkPermissionACCESS_FINE_LOCATION(this)) {
             checkPermissionACCESS_FINE_LOCATION(this);
-        }
-        
-        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-        String userid = sharedPreferences.getString("userid", null);
-        
-        if (userid != null) {
-            updateID(userid);
-        }
-        else {
-            Toast.makeText(this, "User ID not entered - please choose one", Toast.LENGTH_SHORT).show();
         }
 
         /* onClick listeners for elements */
@@ -158,6 +155,7 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+
         spinner = (Spinner) findViewById(R.id.spinner);
         adapter = ArrayAdapter.createFromResource(this, R.array.choose_rate, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -180,14 +178,15 @@ public class MainActivity extends AppCompatActivity  {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(MainActivity.this, "Nothing selected" , Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Nothing selected " , Toast.LENGTH_SHORT).show();
             }
         });
 
         importPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                // TODO import photos activity
+                photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 photoPickerIntent.setType("image/*");
                 photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
@@ -235,9 +234,9 @@ public class MainActivity extends AppCompatActivity  {
     //to a file and creates a folder in the gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         //if we just took a picture from inside the app
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "Image_"+ timeStamp + "_";
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
 
 
@@ -246,6 +245,7 @@ public class MainActivity extends AppCompatActivity  {
             imageBitmap = (Bitmap) extras.get("data");
             File myDir = new File(root, "DejaPhoto");
             myDir.mkdirs();
+            String imageFileName = "Image_"+ timeStamp + "_";
 
             try {
                 File imageF = File.createTempFile(imageFileName, ".jpg", myDir);
@@ -264,31 +264,126 @@ public class MainActivity extends AppCompatActivity  {
         }
         //if we are trying to import photos
         //TODO right now i believe i am getting the uri but dont know what to do with them yet
-        if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK){
-            String[] filePathCol = {MediaStore.Images.Media.DATA};
-            imagesEncodedList = new ArrayList<String>();
-            File myDir = new File(root, "DejaPhotoCopied");
+
+
+        if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
+//            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//            ClipData clipData = data.getClipData();
+//            ArrayList<Uri> theArryUri = new ArrayList<Uri>();
+            File myDir = new File(root, "/DejaPhotoCopy");
             myDir.mkdirs();
-            if(data.getData() != null){
-                Uri imageUri = data.getData();
+            if (!myDir.exists()) {
+                Toast.makeText(this, "What the Fuck", Toast.LENGTH_SHORT).show();
+            }
+//            for (int i = 0; i < clipData.getItemCount(); i++) {
+//                ClipData.Item item = clipData.getItemAt(i);
+//                Uri uri = item.getUri();
+//                theArryUri.add(uri);
+//                try{
+//                    imageBitmap = BitmapFactory.decodeFile(uri.toString());
+//
 
-                Cursor cursor = getContentResolver().query(imageUri,filePathCol,null, null, null);
-                cursor.moveToFirst();
-
-                int colIdx = cursor.getColumnIndex(filePathCol[0]);
-                imageEncoded = cursor.getString(colIdx);
-                cursor.close();
-                //was going to try to put into a file, but don't know how
-//                try {
-//                    File dejaCopied = File.createTempFile("Copied_" + timeStamp + "_", ".jpg", myDir);
-//                    FileOutputStream
-//                } catch ( Exception e){
+//
+//                } catch (IOException e){
 //
 //                }
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            imagesEncodedList = new ArrayList<String>();
+            if (data.getData() != null) {
 
+                Uri mImageUri = data.getData();
+
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(mImageUri,
+                        filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                imageEncoded = cursor.getString(columnIndex);
+                cursor.close();
+                String copyFileName = "Copy_" + timeStamp + "_";
+                try {
+                    File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+                    CurrentPhotoPath = copyF.getAbsolutePath();
+                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+
+                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+                    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                    File f = new File(CurrentPhotoPath);
+                    Uri contentUri = Uri.fromFile(f);
+                    mediaScanIntent.setData(contentUri);
+                    MainActivity.this.sendBroadcast(mediaScanIntent);
+                } catch (IOException e) {
+
+                }
+
+            } else {
+                if (data.getClipData() != null) {
+                    ClipData mClipData = data.getClipData();
+                    ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+                    for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                        ClipData.Item item = mClipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        mArrayUri.add(uri);
+                        // Get the cursor
+                        Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                        // Move to first row
+                        cursor.moveToFirst();
+
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        imageEncoded = cursor.getString(columnIndex);
+                        imagesEncodedList.add(imageEncoded);
+
+                        cursor.close();
+
+                        String copyFileName = "Copy_" + timeStamp + "_";
+                        try {
+                            File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+                            CurrentPhotoPath = copyF.getAbsolutePath();
+                            imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                            FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
+                            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+
+                            photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                            Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                            File f = new File(CurrentPhotoPath);
+                            Uri contentUri = Uri.fromFile(f);
+                            mediaScanIntent.setData(contentUri);
+                            MainActivity.this.sendBroadcast(mediaScanIntent);
+                        } catch (IOException e) {
+
+                        }
+
+
+                    }
+                }
             }
+
+
+//            String[] filePathCol = {MediaStore.Images.Media.DATA};
+//
+
+
+//            imagesEncodedList = new ArrayList<String>();
+//            imagesEncodedList.add(filePathCol[0]);
+//
+//
+//
+//
+////            if(data.getData() != null){
+////
+//                Uri imageUri = data.getData();
+//
+//
+//
+//
         }
     }
+
 
 
 
@@ -415,6 +510,7 @@ public class MainActivity extends AppCompatActivity  {
         //getCameraImages(getApplicationContext());
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
+
         String userid = sharedPreferences.getString("userid", null);
         if (userid != null) {
             // TODO write to firebase
@@ -424,7 +520,6 @@ public class MainActivity extends AppCompatActivity  {
         else {
             Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     // from Android developer site; ask for permission to read external storage at runtime
@@ -505,6 +600,8 @@ public class MainActivity extends AppCompatActivity  {
         alert.show();
     }
 
+    //this is called by the spinner after a selection has been made and it calls doInBackground and runs
+    //the intent for every cycletime
     class AsyncTaskRunner extends AsyncTask<String, String, String> {
         ProgressDialog progressDialog;
         private String ret;
@@ -512,16 +609,6 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         protected String doInBackground(String...params) {
             publishProgress("Sleeping...");
-//            try{
-//                int time = Integer.parseInt(params[0])*1000;
-//
-//                Thread.sleep(time);
-//                ret = "Slept for " + params[0] + " seconds";
-//            }catch (Exception e){
-//                e.printStackTrace();
-//                ret = e.getMessage();
-//            }
-
 
             long starttime = 5000;
             long cycletime;
@@ -559,8 +646,9 @@ public class MainActivity extends AppCompatActivity  {
     class callNext extends TimerTask {
         @Override
         public void run(){
-            Intent nextPhoto = new Intent(MainActivity.this, NextPhotoActivity.class);
-            startActivity(nextPhoto);
+            Intent next = new Intent(MainActivity.this, NextPhotoActivity.class);
+            startActivity(next);
+
         }
     }
 
