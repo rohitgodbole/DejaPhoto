@@ -648,7 +648,6 @@ public class MainActivity extends AppCompatActivity  {
         public void run(){
             Intent next = new Intent(MainActivity.this, NextPhotoActivity.class);
             startActivity(next);
-
         }
     }
 

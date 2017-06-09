@@ -8,10 +8,10 @@
     <string name="title_activity_userLocation">UserLocationActivity</string>
 
     <string-array name="choose_rate">
-        <item>2</item>
+        <item>4</item>
         <item>8</item>
+        <item>16</item>
         <item>32</item>
-        <item>128</item>
     </string-array>
     <string name="title_activity_friends">FriendsActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
