@@ -17,12 +17,14 @@ import android.widget.Toast;
 
 //TODO need to figure out how to do this... needs to prompt user for a location and send it to shardpreferences
 public class usrDefnLocActivity extends AppCompatActivity {
-    final Context context = getApplicationContext();
-    EditText location;
+    //final Context context = getApplicationContext();
+    //EditText location;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.prompts);
 
+        /*
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View promptsView = inflater.inflate(R.layout.prompts,null);
 
@@ -52,6 +54,18 @@ public class usrDefnLocActivity extends AppCompatActivity {
         AlertDialog alertDialog = alertDialogBuilder.create();
 
         alertDialog.show();
+        */
 
+    }
+
+    public void submit (View view) {
+        String customLoc = ((EditText) findViewById(R.id.customLoc)).getText().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        int index = sharedPreferences.getInt("index", 0);
+        editor.putString(Integer.toString(index) + "location", customLoc);
+        editor.commit();
+        Toast.makeText(this, "Custom Location: " + customLoc, Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

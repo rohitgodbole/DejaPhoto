@@ -92,15 +92,18 @@ public class NextPhotoActivity extends AppCompatActivity {
         // Print location
         Location nextPicLocation = getPicLocation(nextPicName);
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        String toPrint = null;
-        try {
-            List<Address> addresses = geocoder.getFromLocation(nextPicLocation.getLatitude(), nextPicLocation.getLongitude(), 1);
-            if (addresses.size() > 0)
-                toPrint = addresses.get(0).getFeatureName();
-            else
-                toPrint = "Location info not found.";
-        } catch (IOException e) {
-            e.printStackTrace();
+        String toPrint = sharedPreferences.getString(Integer.toString(index) + "location", null);
+        if (toPrint == null) {
+            Toast.makeText(this, "no custom location", Toast.LENGTH_SHORT).show(); // TODO
+            try {
+                List<Address> addresses = geocoder.getFromLocation(nextPicLocation.getLatitude(), nextPicLocation.getLongitude(), 1);
+                if (addresses.size() > 0)
+                    toPrint = addresses.get(0).getFeatureName();
+                else
+                    toPrint = "Location info not found.";
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         bitmap = drawTextToBitmap(getApplicationContext(), bitmap, toPrint);
 
