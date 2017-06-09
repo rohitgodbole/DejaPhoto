@@ -38,6 +38,7 @@ public class NextPhotoActivity extends AppCompatActivity {
 
         finish();
         super.onCreate(savedInstanceState);
+        finish();
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -112,6 +113,8 @@ public class NextPhotoActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        finish();
 
     }
 
