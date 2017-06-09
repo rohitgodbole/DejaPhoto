@@ -76,6 +76,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.example.cs110sau.dejaphoto.R.id.parent;
+import static com.example.cs110sau.dejaphoto.R.id.settings;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity  {
     DejaPhoto dejaPhoto;
 
     Button refresh;
-    Switch dejavumode;
+    Button settings;
     Button importPhotos;
     Button takePhoto;
     Button friends;
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity  {
 
         /* onClick listeners for elements */
         refresh = (Button) findViewById(R.id.refresh);
-        dejavumode = (Switch) findViewById(R.id.dejavumode);
+        settings = (Button) findViewById(R.id.settings);
         importPhotos = (Button) findViewById(R.id.importphotos);
         takePhoto = (Button) findViewById(R.id.takephoto);
         friends = (Button) findViewById(R.id.friends);
@@ -181,14 +182,11 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
-
-        dejavumode.setChecked(true);  // deja vu mode is on by default
-
         importPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
                 // TODO import photos activity
-                photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 photoPickerIntent.setType("image/*");
                 photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
@@ -201,7 +199,11 @@ public class MainActivity extends AppCompatActivity  {
             //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
+                //use line below to take multiple pics before returning from intent, but the pics go to camera role and not
+                //custom album
+//                takePictureIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
                 takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
                 startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
 
             }
@@ -218,17 +220,23 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                Intent settingsIntent = new Intent (getApplicationContext(), SettingsActivity.class);
+                startActivity(settingsIntent);
+            }
+        });
+
     }
 
     //gets called after a pictre was taken and gives us a bitmap of the picture then we put the bitmap
     //to a file and creates a folder in the gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
 
         //if we just took a picture from inside the app
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
 
 
@@ -250,21 +258,22 @@ public class MainActivity extends AppCompatActivity  {
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 MainActivity.this.sendBroadcast(mediaScanIntent);
-
             } catch ( IOException e){
 
             }
         }
         //if we are trying to import photos
         //TODO right now i believe i am getting the uri but dont know what to do with them yet
+
+
         if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
 //            String[] filePathColumn = { MediaStore.Images.Media.DATA };
 //            ClipData clipData = data.getClipData();
 //            ArrayList<Uri> theArryUri = new ArrayList<Uri>();
             File myDir = new File(root, "/DejaPhotoCopy");
             myDir.mkdirs();
-            if( !myDir.exists()){
-                Toast.makeText(this,"What the Fuck", Toast.LENGTH_SHORT).show();
+            if (!myDir.exists()) {
+                Toast.makeText(this, "What the Fuck", Toast.LENGTH_SHORT).show();
             }
 //            for (int i = 0; i < clipData.getItemCount(); i++) {
 //                ClipData.Item item = clipData.getItemAt(i);
@@ -293,7 +302,6 @@ public class MainActivity extends AppCompatActivity  {
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 imageEncoded = cursor.getString(columnIndex);
                 cursor.close();
-
                 String copyFileName = "Copy_" + timeStamp + "_";
                 try {
                     File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
@@ -302,14 +310,13 @@ public class MainActivity extends AppCompatActivity  {
                     FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
                     imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
 
-                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri );
+                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
                     Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
                     File f = new File(CurrentPhotoPath);
                     Uri contentUri = Uri.fromFile(f);
                     mediaScanIntent.setData(contentUri);
                     MainActivity.this.sendBroadcast(mediaScanIntent);
-                } catch (IOException e)
-                {
+                } catch (IOException e) {
 
                 }
 
@@ -341,14 +348,13 @@ public class MainActivity extends AppCompatActivity  {
                             FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
                             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
 
-                            photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT,uri );
+                            photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                             Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
                             File f = new File(CurrentPhotoPath);
                             Uri contentUri = Uri.fromFile(f);
                             mediaScanIntent.setData(contentUri);
                             MainActivity.this.sendBroadcast(mediaScanIntent);
-                        } catch (IOException e)
-                        {
+                        } catch (IOException e) {
 
                         }
 
@@ -356,10 +362,6 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 }
             }
-        }
-
-
-
 
 
 //            String[] filePathCol = {MediaStore.Images.Media.DATA};
@@ -379,10 +381,9 @@ public class MainActivity extends AppCompatActivity  {
 //
 //
 //
-
         }
+    }
 
-//    }
 
 
 
@@ -505,24 +506,20 @@ public class MainActivity extends AppCompatActivity  {
     protected void onStop() {
         super.onStop();
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (dejavumode.isChecked()) {
-            editor.putBoolean("dejavumode", true);
-            editor.commit();
-            Toast.makeText(this, "Deja Vu Mode On", Toast.LENGTH_SHORT).show();
-        } else {
-            editor.putBoolean("dejavumode", false);
-            editor.commit();
-            Toast.makeText(this, "Deja Vu Mode Off", Toast.LENGTH_SHORT).show();
-        }
 
         //getCameraImages(getApplicationContext());
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
-        //database = FirebaseDatabase.getInstance();
-        //myRef = database.getReference();
-        //myRef.child("USERID").setValue(new DatabaseStorage());
 
+        String userid = sharedPreferences.getString("userid", null);
+        if (userid != null) {
+            // TODO write to firebase
+            //DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+            //databaseRef.setValue("TEST");
+        }
+        else {
+            Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // from Android developer site; ask for permission to read external storage at runtime
@@ -633,11 +630,6 @@ public class MainActivity extends AppCompatActivity  {
 
         @Override
         protected void onPreExecute() {
-            // TODO progress dialog?
-            //time.findViewById(R.id.edittext);
-            //progressDialog = ProgressDialog.show(MainActivity.this,"ProgressDialog","wait for "+
-            //time.getText().toString()+" seconds");
-
         }
 
         @Override
@@ -649,7 +641,6 @@ public class MainActivity extends AppCompatActivity  {
     //this class is called by the timer to do some sort of function
     //for this instance we are using it to call the nextphotoactivity intent.
     class callNext extends TimerTask {
-
         @Override
         public void run(){
             Intent next = new Intent(MainActivity.this, NextPhotoActivity.class);
@@ -658,9 +649,20 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    // user can enter their own user ID
     public void submituserid (View view) {
-        String userid = "TEST";
-        // TODO make user ids work
+        String userid = ((EditText) findViewById(R.id.userid)).getEditableText().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userid", userid);
+        editor.commit();
+        Toast.makeText(this, "Submitted ID", Toast.LENGTH_SHORT).show();
+        updateID(userid);
+    }
+
+    public void updateID(String userid) {
+        TextView title = (TextView) findViewById(R.id.title);
+        title.setText("DejaPhoto: " + userid);
     }
 }
 
