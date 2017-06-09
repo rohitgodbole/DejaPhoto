@@ -13,4 +13,5 @@
         <item>32</item>
         <item>128</item>
     </string-array>
+    <string name="title_activity_friends">FriendsActivity</string>
 </resources>

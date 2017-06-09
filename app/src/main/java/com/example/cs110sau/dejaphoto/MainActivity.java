@@ -86,8 +86,6 @@ public class MainActivity extends AppCompatActivity  {
     static final long HOURS_IN_MONTH = 730;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 //    static final int REQUEST_TAKE_PHOTO = 145;
-    //used to take a photo within the app and store the photo onto the gallery
-    static final int REQUEST_TAKE_PHOTO = 1;
     String CurrentPhotoPath;
     Intent takePictureIntent;
     Bitmap imageBitmap;
@@ -106,9 +104,7 @@ public class MainActivity extends AppCompatActivity  {
     Button importPhotos;
     Button takePhoto;
     Button friends;
-    Button settings;
     Button autoRef;
-    EditText time;
     //TextView finalResult;
 
     FirebaseDatabase database;
@@ -140,15 +136,13 @@ public class MainActivity extends AppCompatActivity  {
         importPhotos = (Button) findViewById(R.id.importphotos);
         takePhoto = (Button) findViewById(R.id.takephoto);
         friends = (Button) findViewById(R.id.friends);
-        settings = (Button) findViewById(R.id.settings);
         autoRef = (Button) findViewById(R.id.auto_ref);
-        time = (EditText) findViewById(R.id.edittext);
 
         autoRef.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 AsyncTaskRunner runner = new AsyncTaskRunner();
-                String sleepTime = time.getText().toString();
+                String sleepTime = spinner.getSelectedItem().toString();
                 runner.execute(sleepTime);
             }
         });
@@ -219,18 +213,10 @@ public class MainActivity extends AppCompatActivity  {
         friends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {
-                // TODO start friends activity
+                Intent friendsIntent = new Intent (getApplicationContext(), FriendsActivity.class);
+                startActivity(friendsIntent);
             }
         });
-
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View view) {
-                // TODO settings activity
-            }
-        });
-
-
 
     }
 
@@ -584,9 +570,10 @@ public class MainActivity extends AppCompatActivity  {
 
         @Override
         protected void onPreExecute() {
-            time.findViewById(R.id.edittext);
-            progressDialog = ProgressDialog.show(MainActivity.this,"ProgressDialog","wait for "+
-            time.getText().toString()+" seconds");
+            // TODO progress dialog?
+            //time.findViewById(R.id.edittext);
+            //progressDialog = ProgressDialog.show(MainActivity.this,"ProgressDialog","wait for "+
+            //time.getText().toString()+" seconds");
 
         }
 
@@ -606,6 +593,11 @@ public class MainActivity extends AppCompatActivity  {
             startActivity(next);
 
         }
+    }
+
+    public void submituserid (View view) {
+        String userid = "TEST";
+        // TODO make user ids work
     }
 }
 

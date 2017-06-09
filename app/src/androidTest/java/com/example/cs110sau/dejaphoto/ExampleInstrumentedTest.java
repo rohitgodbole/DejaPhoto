@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+
     @Rule
     public ActivityTestRule<KarmaActivity> karmaActivity = new ActivityTestRule<KarmaActivity>(KarmaActivity.class);
 
@@ -47,7 +48,12 @@ public class ExampleInstrumentedTest {
         Intent intent = new Intent(context, KarmaActivity.class);
         karmaActivity.getActivity().startActivity(intent);
 
-        assertEquals("karma",context.getPackageName());
+
+        int test_index = Integer.MAX_VALUE;
+        // TODO: how to get context from main application or karma activity
+
+        //SharedPreferences sharedPreferences = getSharedPreferences ("user_name", MODE_PRIVATE);
+
 
     }
 

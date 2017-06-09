@@ -31,15 +31,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="36dp"
-            android:text="DejaPhoto"/>
+            android:text="DejaPhoto"
+            android:textColor="#303080"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dejavumode"
+            android:text="Deja Vu Mode: "/>
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Choose Rate"
-            android:textSize="24sp"
-            android:visibility="invisible" />
+            android:textSize="24sp" />
 
         <Spinner
             android:id="@+id/spinner"
@@ -47,11 +53,11 @@
             android:layout_height="wrap_content"
             android:visibility="visible" />
 
-        <Switch
+        <Button
+            android:id="@+id/auto_ref"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dejavumode"
-            android:text="Deja Vu Mode: "/>
+            android:text="Run AutoRefresh" />
 
         <Button
             android:layout_width="wrap_content"
@@ -77,22 +83,17 @@
             android:text="Friends"
             android:id="@+id/friends"/>
 
+        <EditText
+            android:id="@+id/userid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="           User ID           " />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Settings"
-            android:id="@+id/settings"/>
-
-        <Button
-            android:id="@+id/auto_ref"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="RunAutoRefresh" />
-        <EditText
-            android:id="@+id/edittext"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="User ID" />
+            android:text="Submit User ID"
+            android:onClick="submituserid"/>
 
     </LinearLayout>
 

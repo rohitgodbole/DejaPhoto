@@ -30,7 +30,7 @@ public class WidgetProvider extends AppWidgetProvider {
         PendingIntent prevPendingIntent = PendingIntent.getActivity(context, 0, prevIntent, 0);
         PendingIntent karmaPendingIntent = PendingIntent.getActivity(context, 0, karmaIntent, 0);
         PendingIntent releasePendingIntent = PendingIntent.getActivity(context, 0, releaseIntent, 0);
-        PendingIntent LocationPendingIntent = PendingIntent.getActivity(context, 1, userLocIntent, 0);
+        PendingIntent LocationPendingIntent = PendingIntent.getActivity(context, 0, userLocIntent, 0);
 
         remoteViews.setOnClickPendingIntent(R.id.right, nextPendingIntent);
         remoteViews.setOnClickPendingIntent(R.id.left, prevPendingIntent);
