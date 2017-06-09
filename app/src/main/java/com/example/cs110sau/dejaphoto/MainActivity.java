@@ -144,7 +144,9 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick(View v){
                 AsyncTaskRunner runner = new AsyncTaskRunner();
                 String sleepTime = spinner.getSelectedItem().toString();
+
                 runner.execute(sleepTime);
+                //runner.execute();
             }
         });
 
@@ -597,7 +599,8 @@ public class MainActivity extends AppCompatActivity  {
 
         @Override
         protected void onPostExecute(String result) {
-            progressDialog.dismiss();
+            //progressDialog.dismiss();
+            finish();
 
         }
 
@@ -621,6 +624,7 @@ public class MainActivity extends AppCompatActivity  {
         public void run(){
             Intent next = new Intent(MainActivity.this, NextPhotoActivity.class);
             startActivity(next);
+           // finish();
         }
     }
 

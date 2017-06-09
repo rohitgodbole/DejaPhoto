@@ -3,7 +3,9 @@ package Tests;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.ActivityTestRule;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import com.example.cs110sau.dejaphoto.MainActivity;
@@ -22,6 +24,29 @@ public class MainActivityTest {
     @Rule
     public ActivityTestRule<MainActivity> mainActivity = new ActivityTestRule<MainActivity>(MainActivity.class);
     private Context context = InstrumentationRegistry.getTargetContext();
+
+
+    @UiThreadTest
+    public void testAutoRefListener () {
+        Button autoRef = (Button) mainActivity.getActivity().findViewById(R.id.auto_ref);
+        autoRef.performClick();
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user_name", Context.MODE_PRIVATE);
+        long sleeptime = sharedPreferences.getLong("sleeptime", 5000);
+        Spinner sp = (Spinner) mainActivity.getActivity().findViewById(R.id.spinner);
+        String slptime = sp.getSelectedItem().toString();
+        assertEquals(sleeptime, slptime);
+    }
+
+    @UiThreadTest
+    public void testSpinnerListener () {
+        int position = 0;
+        Spinner sp = (Spinner) mainActivity.getActivity().findViewById(R.id.spinner);
+        sp.setSelection(position);
+        int mposition = sp.getSelectedItemPosition();
+
+        assertEquals(mposition, position);
+    }
+
 
     @Test
     public void autoRefreshRate() {
