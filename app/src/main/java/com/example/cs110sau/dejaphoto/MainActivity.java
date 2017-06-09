@@ -199,11 +199,7 @@ public class MainActivity extends AppCompatActivity  {
             //this will take you to the built in camera it simply just goes there
             @Override
             public void onClick (View view) {
-                //use line below to take multiple pics before returning from intent, but the pics go to camera role and not
-                //custom album
-//                takePictureIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
                 takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
                 startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
 
             }
@@ -267,26 +263,12 @@ public class MainActivity extends AppCompatActivity  {
 
 
         if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
-//            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-//            ClipData clipData = data.getClipData();
-//            ArrayList<Uri> theArryUri = new ArrayList<Uri>();
             File myDir = new File(root, "/DejaPhotoCopy");
             myDir.mkdirs();
             if (!myDir.exists()) {
                 Toast.makeText(this, "What the Fuck", Toast.LENGTH_SHORT).show();
             }
-//            for (int i = 0; i < clipData.getItemCount(); i++) {
-//                ClipData.Item item = clipData.getItemAt(i);
-//                Uri uri = item.getUri();
-//                theArryUri.add(uri);
-//                try{
-//                    imageBitmap = BitmapFactory.decodeFile(uri.toString());
-//
 
-//
-//                } catch (IOException e){
-//
-//                }
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             imagesEncodedList = new ArrayList<String>();
             if (data.getData() != null) {
@@ -362,25 +344,6 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 }
             }
-
-
-//            String[] filePathCol = {MediaStore.Images.Media.DATA};
-//
-
-
-//            imagesEncodedList = new ArrayList<String>();
-//            imagesEncodedList.add(filePathCol[0]);
-//
-//
-//
-//
-////            if(data.getData() != null){
-////
-//                Uri imageUri = data.getData();
-//
-//
-//
-//
         }
     }
 
@@ -407,11 +370,51 @@ public class MainActivity extends AppCompatActivity  {
 
         List<String> pathNames = new ArrayList<String>(cursor.getCount());
 
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File myDir = new File(root, "/DejaPhotoCopy");
+        myDir.mkdirs();
+
+        String copyFileName = "Copy_" + timeStamp + "_";
+        Uri uri;
+
+
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            int i = 0;
             do {
                 final String data = cursor.getString(dataColumn);
                 pathNames.add(data);
+                try {
+                    Toast.makeText(this, "it goes in", Toast.LENGTH_SHORT).show();
+                    File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+                    Toast.makeText(this, copyF.toString(), Toast.LENGTH_SHORT).show();
+
+                    CurrentPhotoPath = copyF.getAbsolutePath();
+                    uri = Uri.parse(pathNames.get(i));
+                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+
+                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
+                    if( imageBitmap == null){
+                        Toast.makeText(this, "it's null", Toast.LENGTH_SHORT).show();
+                    }
+                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath());
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+
+//                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                    File f = new File(CurrentPhotoPath);
+//                    Uri contentUri = Uri.fromFile(f);
+                    mediaScanIntent.setData(uri);
+                    MainActivity.this.sendBroadcast(mediaScanIntent);
+                    Toast.makeText(this, "it finishes", Toast.LENGTH_SHORT).show();
+
+                }
+                catch(IOException e){
+
+                }
+                i++;
             } while (cursor.moveToNext());
         }
 
@@ -423,12 +426,6 @@ public class MainActivity extends AppCompatActivity  {
         editor.putInt("size", pathNames.size());
 
         int totalScore = 0; // keeps track of cumulative probability scores of photos
-
-        // (TODO) create new album (doesn't work yet)
-//        final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
-//                (Environment.DIRECTORY_DOWNLOADS), "DejaPhoto");
-//        imageRoot.mkdirs();
-//        Toast.makeText(context, "making dir: " + imageRoot.getAbsolutePath(), Toast.LENGTH_SHORT).show();
 
         // Give each photo a probability score 1-100, default is 10
         for (int i = 0; i < pathNames.size(); i++) {
@@ -457,29 +454,6 @@ public class MainActivity extends AppCompatActivity  {
             editor.putInt(key + "score", score);
             totalScore += score;
 
-
-//            OutputStream fOut = null;
-//            File file = new File (imageRoot, pathNames.get(i) + ".jpg");
-//            try {
-//                fOut = new FileOutputStream(file);
-//                Bitmap bitmap = BitmapFactory.decodeFile(pathNames.get(i));
-//                bitmap.compress (Bitmap.CompressFormat.JPEG, 100, fOut);
-//                fOut.flush();
-//                fOut.close();
-//
-//                ContentValues values = new ContentValues();
-//                values.put(MediaStore.Images.Media.TITLE, "testing");
-//                values.put(MediaStore.Images.Media.DESCRIPTION, "some picture");
-//                values.put(MediaStore.Images.ImageColumns.BUCKET_ID, file.toString().toLowerCase(Locale.US).hashCode());
-//                values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(Locale.US));
-//                values.put("_data", file.getAbsolutePath());
-//
-//                ContentResolver cr = getContentResolver();
-//                cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-////            }
-//            catch (Exception e) {
-//                //Toast.makeText(context, "GET CAMERA IMAGES EXCEPTION", Toast.LENGTH_SHORT).show();
-//            }
         }
 
         // don't mess with index, unless it's outside our new array of path names
