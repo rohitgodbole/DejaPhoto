@@ -10,12 +10,23 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SettingsActivity extends AppCompatActivity {
 
     Switch dejavumode;
     Switch yourphotos;
     Switch friendsphotos;
     Switch sharephotos;
+
+    //sharing photos
+    int numPics;
+    List<String> picNames = new ArrayList<String>();
+    String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +53,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         dejavumode.setChecked(sharedPreferences.getBoolean("dejavumode", true));
         yourphotos.setChecked(sharedPreferences.getBoolean("yourphotos", true));
-        friendsphotos.setChecked(sharedPreferences.getBoolean("friendsphotos", true));
-        sharephotos.setChecked(sharedPreferences.getBoolean("sharephotos", true));
+        friendsphotos.setChecked(sharedPreferences.getBoolean("friendsphotos", false));
+        sharephotos.setChecked(sharedPreferences.getBoolean("sharephotos", false));
 
     }
 
@@ -65,8 +76,24 @@ public class SettingsActivity extends AppCompatActivity {
         if (friendsphotos.isChecked())
             friendsphotos_on = true;
 
-        if (sharephotos.isChecked())
+        if (sharephotos.isChecked()) {
             sharephotos_on = true;
+
+            //getting the name of the pictures from sharedPreferences
+            numPics = sharedPreferences.getInt("size", 0);
+            for( int i = 0; i < numPics; i++){
+                key = Integer.toString(i);
+                String tempname = sharedPreferences.getString(key,"");
+                picNames.add(i,tempname);
+                //TODO get other picture params
+
+//                FirebaseDatabase firebaseDB = FirebaseDatabase.getInstance();
+//                DatabaseReference dbRef = firebaseDB.getReference();
+//                dbRef.setValue(sharedPreferences.getString(key,null));
+            }
+
+
+        }
 
         editor.putBoolean("dejavumode", dejavumode_on);
         editor.putBoolean("yourphotos", yourphotos_on);

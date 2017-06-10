@@ -48,8 +48,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -129,6 +132,12 @@ public class MainActivity extends AppCompatActivity  {
 
         while (!checkPermissionACCESS_FINE_LOCATION(this)) {
             checkPermissionACCESS_FINE_LOCATION(this);
+        }
+
+        SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
+        String userid = sharedPreferences.getString("userid", null);
+        if (userid != null) {
+            updateID (userid);
         }
 
         /* onClick listeners for elements */
@@ -267,9 +276,6 @@ public class MainActivity extends AppCompatActivity  {
         if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
             File myDir = new File(root, "/DejaPhotoCopy");
             myDir.mkdirs();
-            if (!myDir.exists()) {
-                Toast.makeText(this, "What the Fuck", Toast.LENGTH_SHORT).show();
-            }
 
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             imagesEncodedList = new ArrayList<String>();
@@ -373,23 +379,24 @@ public class MainActivity extends AppCompatActivity  {
 
         List<String> pathNames = new ArrayList<String>(cursor.getCount());
 
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root, "/DejaPhotoCopy");
-        myDir.mkdirs();
-
-        String copyFileName = "Copy_" + timeStamp + "_";
-        Uri uri;
+//
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+//        File myDir = new File(root, "/DejaPhotoCopy");
+////        myDir.mkdirs();
+//
+//        String copyFileName = "Copy_" + timeStamp + "_";
+//        Uri uri;
 
 
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            int i = 0;
+//            int i = 0;
             do {
                 final String data = cursor.getString(dataColumn);
-                //puting the picture in the DejaPhotoCopy
+                // putting the picture in DejaPhotoCopy
                 pathNames.add(data);
+                /*
                 try {
                     File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
                     Toast.makeText(this,copyF.getAbsolutePath().substring(0,42),Toast.LENGTH_LONG).show();
@@ -415,7 +422,8 @@ public class MainActivity extends AppCompatActivity  {
                 catch(IOException e){
 
                 }
-                i++;
+                */
+                //i++;
             } while (cursor.moveToNext());
         }
 
@@ -482,19 +490,17 @@ public class MainActivity extends AppCompatActivity  {
         super.onStop();
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
 
-        //getCameraImages(getApplicationContext());
+        getCameraImages(getApplicationContext());
 
-        // Before closing app, save DejaPhoto data to Firebase (TODO)
-        FirebaseDatabase firebaseDB = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = firebaseDB.getReference();
-        dbRef.setValue("TEST");
-
+        // Before closing app, save DejaPhoto data to Firebase
         String userid = sharedPreferences.getString("userid", null);
-        if (userid != null) {
-            // TODO write to Firebase?
+        if (userid == null) {
+            Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
+            FirebaseDatabase firebaseDB = FirebaseDatabase.getInstance();
+            DatabaseReference ref = firebaseDB.getReference();
+            ref.child(userid).setValue(new DatabaseStorage());
         }
     }
 
