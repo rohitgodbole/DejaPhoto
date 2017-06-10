@@ -16,6 +16,7 @@ import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +27,7 @@ public class PrevPhotoActivity extends AppCompatActivity {
     // onCreate: runs when activity is started, switches wallpaper to most recently selected photo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("Fetching prev photo", ".");
         finish();
         super.onCreate(savedInstanceState);
 

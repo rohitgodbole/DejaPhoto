@@ -103,12 +103,15 @@ public class MainActivity extends AppCompatActivity  {
 
     DejaPhoto dejaPhoto;
 
+    AsyncTaskRunner runner;
+
     Button refresh;
     Button settings;
     Button importPhotos;
     Button takePhoto;
     Button friends;
     Button autoRef;
+    Button stopAuto;
     //TextView finalResult;
 
     FirebaseDatabase database;
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity  {
     /* Runs when activity is started */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("App started", ".");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -147,14 +151,24 @@ public class MainActivity extends AppCompatActivity  {
         takePhoto = (Button) findViewById(R.id.takephoto);
         friends = (Button) findViewById(R.id.friends);
         autoRef = (Button) findViewById(R.id.auto_ref);
+        stopAuto = (Button) findViewById(R.id.stop_ref);
 
         autoRef.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                AsyncTaskRunner runner = new AsyncTaskRunner();
+                //AsyncTaskRunner runner = new AsyncTaskRunner();
+                runner = new AsyncTaskRunner();
                 String sleepTime = spinner.getSelectedItem().toString();
 
                 runner.execute(sleepTime);
+                //runner.execute();
+            }
+        });
+
+        stopAuto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                runner.cancel(true);
                 //runner.execute();
             }
         });
@@ -177,12 +191,15 @@ public class MainActivity extends AppCompatActivity  {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String itemselected = parent.getItemAtPosition(position).toString();
                 changeRate = Long.valueOf(itemselected).longValue() * 1000;
+                Log.i("spinner clicked", ".");
+                Log.d("refresh rate is", itemselected);
 
                 SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 editor.putLong("refresh rate", changeRate);
                 editor.commit();
+
 
 
             }
@@ -477,6 +494,7 @@ public class MainActivity extends AppCompatActivity  {
             editor.putString("recent" + i, null);
         }
 
+        Log.d("total score is ", Integer.toString(totalScore) );
         editor.putInt("totalScore", totalScore); // write total score, which determines probability
         editor.commit();
 
@@ -487,6 +505,7 @@ public class MainActivity extends AppCompatActivity  {
 
     /* onStop - once user exits app, if deja vu mode is on, adjust scores of each picture accordingly */
     protected void onStop() {
+        Log.i("App stopped", ".");
         super.onStop();
         SharedPreferences sharedPreferences = getSharedPreferences("user_name", MODE_PRIVATE);
 

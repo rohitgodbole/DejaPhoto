@@ -3,6 +3,7 @@ package com.example.cs110sau.dejaphoto;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 public class KarmaActivity extends AppCompatActivity {
@@ -22,6 +23,9 @@ public class KarmaActivity extends AppCompatActivity {
             editor.putBoolean(Integer.toString(index) + "karma", true);
             int score = sharedPreferences.getInt(Integer.toString(index)+"score", 0);
             score += 5;
+
+            Log.d("score after karma is ", Integer.toString(score));
+
             editor.putInt(Integer.toString(index) + "score", score);
             editor.commit();
             Toast.makeText(this, "Added Karma", Toast.LENGTH_SHORT).show();

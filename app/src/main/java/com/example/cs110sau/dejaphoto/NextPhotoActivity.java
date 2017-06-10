@@ -17,6 +17,7 @@ import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class NextPhotoActivity extends AppCompatActivity {
     // onCreate - runs when activity starts, cycles to next photo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("Calculating next photo",".");
 
         finish();
         super.onCreate(savedInstanceState);
@@ -87,6 +89,7 @@ public class NextPhotoActivity extends AppCompatActivity {
         editor.putString("recentX", nextPicName);
         editor.commit();
 
+        Log.i("Updating to wallpaper", ".");
         WallpaperManager w = WallpaperManager.getInstance(getApplicationContext());
         Bitmap bitmap = BitmapFactory.decodeFile(nextPicName);
 
