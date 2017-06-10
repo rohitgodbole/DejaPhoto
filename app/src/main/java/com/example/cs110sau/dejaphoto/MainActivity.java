@@ -485,6 +485,9 @@ public class MainActivity extends AppCompatActivity  {
         //getCameraImages(getApplicationContext());
 
         // Before closing app, save DejaPhoto data to Firebase (TODO)
+        FirebaseDatabase firebaseDB = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = firebaseDB.getReference();
+        dbRef.setValue("TEST");
 
         String userid = sharedPreferences.getString("userid", null);
         if (userid != null) {
