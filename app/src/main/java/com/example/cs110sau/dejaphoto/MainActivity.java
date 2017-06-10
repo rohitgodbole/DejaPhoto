@@ -423,7 +423,7 @@ public class MainActivity extends AppCompatActivity  {
 
                 }
                 */
-                i++;
+                //i++;
             } while (cursor.moveToNext());
         }
 
