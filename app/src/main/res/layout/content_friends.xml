@@ -20,8 +20,20 @@
             android:layout_height="wrap_content"
             android:text="YOU HAVE NO FRIENDS" />
 
+        <EditText
+            android:id="@+id/friendid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter friend's user ID" />
+
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/addFriends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add friends" />
+
+        <Button
+            android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="finish"
