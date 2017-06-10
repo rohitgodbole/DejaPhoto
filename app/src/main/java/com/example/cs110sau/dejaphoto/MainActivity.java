@@ -267,9 +267,6 @@ public class MainActivity extends AppCompatActivity  {
         if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
             File myDir = new File(root, "/DejaPhotoCopy");
             myDir.mkdirs();
-            if (!myDir.exists()) {
-                Toast.makeText(this, "What the Fuck", Toast.LENGTH_SHORT).show();
-            }
 
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             imagesEncodedList = new ArrayList<String>();
@@ -373,49 +370,49 @@ public class MainActivity extends AppCompatActivity  {
 
         List<String> pathNames = new ArrayList<String>(cursor.getCount());
 
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root, "/DejaPhotoCopy");
-        myDir.mkdirs();
-
-        String copyFileName = "Copy_" + timeStamp + "_";
-        Uri uri;
+//
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+//        File myDir = new File(root, "/DejaPhotoCopy");
+////        myDir.mkdirs();
+//
+//        String copyFileName = "Copy_" + timeStamp + "_";
+//        Uri uri;
 
 
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            int i = 0;
+//            int i = 0;
             do {
                 final String data = cursor.getString(dataColumn);
                 //puting the picture in the DejaPhotoCopy
                 pathNames.add(data);
-                try {
-                    File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
-                    Toast.makeText(this,copyF.getAbsolutePath().substring(0,42),Toast.LENGTH_LONG).show();
-
-                    CurrentPhotoPath = copyF.getAbsolutePath().substring(0,57) + pathNames.get(i).substring(36);
-                    uri = Uri.parse(CurrentPhotoPath);
-
-                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
-
-                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath().substring(0,42));
-                    Toast.makeText(this,copyF.getAbsolutePath().substring(0,57),Toast.LENGTH_LONG).show();
-                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
-
-//                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-                    File f = new File(CurrentPhotoPath);
-//                    Uri contentUri = Uri.fromFile(f);
-                    mediaScanIntent.setData(uri);
-                    MainActivity.this.sendBroadcast(mediaScanIntent);
-                    Toast.makeText(this, "it finishes", Toast.LENGTH_SHORT).show();
-
-                }
-                catch(IOException e){
-
-                }
-                i++;
+//                try {
+//                    File copyF = File.createTempFile(copyFileName, ".jpg", myDir);
+//                    Toast.makeText(this,copyF.getAbsolutePath().substring(0,42),Toast.LENGTH_LONG).show();
+//
+//                    CurrentPhotoPath = copyF.getAbsolutePath().substring(0,57) + pathNames.get(i).substring(36);
+//                    uri = Uri.parse(CurrentPhotoPath);
+//
+//                    imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
+//
+//                    FileOutputStream fout = new FileOutputStream(copyF.getAbsolutePath().substring(0,42));
+//                    Toast.makeText(this,copyF.getAbsolutePath().substring(0,57),Toast.LENGTH_LONG).show();
+//                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+//
+////                    photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+//                    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+//                    File f = new File(CurrentPhotoPath);
+////                    Uri contentUri = Uri.fromFile(f);
+//                    mediaScanIntent.setData(uri);
+//                    MainActivity.this.sendBroadcast(mediaScanIntent);
+//                    Toast.makeText(this, "it finishes", Toast.LENGTH_SHORT).show();
+//
+//                }
+//                catch(IOException e){
+//
+//                }
+//                i++;
             } while (cursor.moveToNext());
         }
 
@@ -484,18 +481,18 @@ public class MainActivity extends AppCompatActivity  {
 
         //getCameraImages(getApplicationContext());
 
-        // Before closing app, save DejaPhoto data to Firebase (TODO)
-        FirebaseDatabase firebaseDB = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = firebaseDB.getReference();
-        dbRef.setValue("TEST");
-
-        String userid = sharedPreferences.getString("userid", null);
-        if (userid != null) {
-            // TODO write to Firebase?
-        }
-        else {
-            Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
-        }
+//        // Before closing app, save DejaPhoto data to Firebase (TODO)
+//        FirebaseDatabase firebaseDB = FirebaseDatabase.getInstance();
+//        DatabaseReference dbRef = firebaseDB.getReference();
+//        dbRef.setValue("somthing else");
+//
+//        String userid = sharedPreferences.getString("userid", null);
+//        if (userid != null) {
+//            // TODO write to Firebase?
+//        }
+//        else {
+//            Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     // from Android developer site; ask for permission to read external storage at runtime
