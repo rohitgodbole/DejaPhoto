@@ -8,14 +8,16 @@ import java.util.ArrayList;
 
 
 public class DatabaseStorage {
-    public ArrayList<String> paths;
+    public ArrayList<String> friends;
+    public ArrayList<String> requests; // incoming friend requests
     public ArrayList<Integer> karma;
     public DatabaseStorage() {
         karma = new ArrayList<>();
-        paths = new ArrayList<>();
-        karma.add(100);
-        paths.add("testpath1");
-        karma.add(99);
-        paths.add("testpath2");
+        friends = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            karma.add (i += 7);
+        }
+        friends.add("TEST_FRIEND1");
+        friends.add("TEST_FRIEND2");
     }
 }
