@@ -5,32 +5,36 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
 import com.example.cs110sau.dejaphoto.MainActivity;
-import com.example.cs110sau.dejaphoto.PrevPhotoActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Created by shuting on 6/9/2017.
+ * Created by Oscar on 6/9/17.
  */
 
-public class PrevPhotoActivityTest {
+public class AsyncTaskRunnerTest {
     @Rule
     public ActivityTestRule<MainActivity> mainActivity = new ActivityTestRule<MainActivity>(MainActivity.class);
     private Context context = InstrumentationRegistry.getTargetContext();
 
     @Test
-    public void testUpdateRecentPhotos () {
+    public void testDoInBackground(){
 
     }
 
     @Test
-    public void testDrawTextToBitmap () {
+    public void testOnPostExecute(){
 
     }
 
     @Test
-    public void testGetPicLocation () {
+    public void testOnPreExecute(){
+
+    }
+
+    @Test
+    public void testonProgressUpdate(){
 
     }
 }

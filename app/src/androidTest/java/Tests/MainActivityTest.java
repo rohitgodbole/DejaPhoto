@@ -5,14 +5,18 @@ import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.ActivityTestRule;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.cs110sau.dejaphoto.MainActivity;
 import com.example.cs110sau.dejaphoto.R;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.annotation.concurrent.ThreadSafe;
 
 import static org.junit.Assert.*;
 
@@ -57,5 +61,33 @@ public class MainActivityTest {
         long cycletime = sharedPreferences.getLong("refresh rate", 5000);
         assertEquals(4000,cycletime);
     }
+
+    @Test
+    public void testUpdateID(){
+        mainActivity.getActivity().updateID("new");
+        TextView textView = (TextView) mainActivity.getActivity().findViewById(R.id.title);
+        String newTitle = textView.getText().toString();
+        assertTrue(newTitle.equals("new"));
+    }
+
+    @Test
+    public void testsubmituserid(){
+
+    }
+
+    @Test void testShowDialog(){
+
+    }
+
+    @Test
+    public void checkPermissionACCESS_FINE_LOCATION(){
+
+    }
+
+    @Test
+    public void checkPermissionREAD_EXTERNAL_STORAGE(){
+
+    }
+
 
 }

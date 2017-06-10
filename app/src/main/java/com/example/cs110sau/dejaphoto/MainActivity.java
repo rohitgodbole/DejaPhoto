@@ -488,9 +488,7 @@ public class MainActivity extends AppCompatActivity  {
 
         String userid = sharedPreferences.getString("userid", null);
         if (userid != null) {
-            // TODO write to firebase
-            //DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
-            //databaseRef.setValue("TEST");
+            // TODO write to Firebase?
         }
         else {
             Toast.makeText(this, "Set up user ID to allow online storage", Toast.LENGTH_SHORT).show();

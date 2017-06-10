@@ -31,6 +31,7 @@ public class FriendsActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "You must create an user ID first.", Toast.LENGTH_LONG).show();
                 }
 
+
             }
         });
 
